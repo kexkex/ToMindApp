@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools">
+    <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true" app:srcCompat="@drawable/ic_add_black_24dp"
+            android:id="@+id/addFAB" android:layout_weight="1"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            app:backgroundTint="@color/colorSecondary"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            app:rippleColor="@color/colorSecondary"
+            android:onClick="fabClick" android:focusable="auto" android:layout_gravity="bottom|right"/>
+    <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
+
+                <android.support.v7.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:scrollbars="vertical" android:id="@+id/rvWords"
+                        android:clickable="true"
+                        android:focusable="auto" tools:listitem="@layout/item_container"/>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
+
+

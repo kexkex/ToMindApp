@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" android:id="@+id/rvItem" android:background="@color/colorTextOnP"
+        android:layout_marginLeft="2dp" android:layout_marginRight="2dp" android:layout_marginTop="2dp"
+>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/tvRvGroup" android:textSize="14sp"
+                android:layout_marginLeft="32dp" android:layout_marginTop="8dp"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/tvRvTitle" android:textSize="24sp"
+                android:layout_marginLeft="16dp" android:layout_marginTop="8dp"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/tvRvDescr" android:textSize="18sp"
+                android:layout_marginLeft="16dp" android:layout_marginTop="8dp" android:layout_marginBottom="4dp"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_gravity="right" android:gravity="right">
+            <TextView
+                    android:text="Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/tvRvDate" android:layout_weight="1"
+            />
+            <Button
+                    android:text="Done"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/buDone" android:layout_weight="0"/>
+            <Button
+                    android:text="Edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/buEdit" android:layout_weight="0"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
