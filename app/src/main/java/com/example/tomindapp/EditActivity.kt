@@ -12,24 +12,35 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.view.View
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import kotlinx.android.synthetic.main.activity_edit.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.reflect.Array
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class EditActivity : AppCompatActivity() {
 
     var id=0
     var responseTxt:String=""
     //var contains:Boolean=false
+    @Volatile
+    var responseText:String?=null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +52,8 @@ class EditActivity : AppCompatActivity() {
         buEditSearch.setOnClickListener { v ->
             onSearchClick()
         }*/
+        val buWiki = buEditSearch
+        if (isNetworkConnected()) buWiki.visibility=Button.VISIBLE else buWiki.visibility=Button.INVISIBLE
 
         try {
             var bundle: Bundle = intent.extras
@@ -61,41 +74,93 @@ class EditActivity : AppCompatActivity() {
     }
 
 
-    fun onSearchClick(){
+    fun onWikiClick(view: View){
+        var wikiDescr:String?=""
+        val word=tvEditWord.text.toString()
+
+        if (word!=null) wikiDescr=sendGet(word)
+
+        tvEditDescription.setText(wikiDescr)
 
     }
 
 
-    fun sendGet(word:String):String {
-        /*var responseText=""
-        val encodedWord=URLEncoder.encode(word,"utf8")
-        val url=URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
-
-        try {
-            url.openConnection()
-
-            responseText=url.readText()
-        }catch (ex:Exception){responseText=ex.toString()}*/
+    fun sendGet(word:String): String? {
+        val progBar = progressBar2
+        progBar.visibility= ProgressBar.INVISIBLE
+        do {
+            progBar.visibility= ProgressBar.VISIBLE
 
 
-        /*val urlConnection=url.openConnection() as HttpURLConnection
-        urlConnection.requestMethod = "GET"
-        var br=urlConnection.inputStream.bufferedReader(Charsets.UTF_8)
-
-        var inputLine=br.readLine()
-        while (inputLine!=null) {
-            responseText += inputLine
-            inputLine = br.readLine()
-        }*/
+            GlobalScope.launch {
 
 
+                val encodedWord = URLEncoder.encode(word, "utf8")
+                val url = URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
+                var resptxt = ""
+
+                try {
+                    url.openConnection()
+
+                    responseText = url.readText()
+                } catch (ex: Exception) {
+                    responseText = ex.toString()
+                }
+
+
+                /*val urlConnection=url.openConnection() as HttpURLConnection
+                urlConnection.requestMethod = "GET"
+                var br=urlConnection.inputStream.bufferedReader(Charsets.UTF_8)
+
+                var inputLine=br.readLine()
+                    while (inputLine!=null) {
+                        resptxt += inputLine
+                        inputLine = br.readLine()
+                    }
+                responseText=resptxt*/
+            }
+
+        } while (responseText==null)
+
+
+       //responseText=fromJsonParse(responseText!!)
+
+        progBar.visibility= ProgressBar.INVISIBLE
+
+        Toast.makeText(this, "$responseText", Toast.LENGTH_LONG).show()
+
+        return responseText
 
 
 
+    }
 
-        return word
+
+    fun fromJsonParse(jsonString:String):String  {
+        var fromJsonString=""
+        val gson = Gson();
 
 
+        var type = object:TypeToken<ArrayList<Any>>(){}.type
+        var read = arrayListOf<Any>(gson.fromJson<Any>(jsonString,type))
+        var titles= arrayListOf<String>(read[1].toString())
+        var contents = arrayListOf<String>(read[2].toString())
+        var links = arrayListOf<String>(read[3].toString())
+        for (s in links) fromJsonString+=s
+        fromJsonString=replaceChar(fromJsonString)
+        return fromJsonString
+
+
+    }
+
+    fun replaceChar(str:String):String{
+    var s=str
+    s=s.replace("[", "")
+    s=s.replace("]", "")
+    s=s.replace("?", "")
+    s=s.replace("\u0301", "")
+    //str=str.replace("", "")
+    return s
     }
 
     fun getCurrentDate():String{
