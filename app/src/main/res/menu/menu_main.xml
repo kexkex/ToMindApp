@@ -16,11 +16,7 @@
                         app:showAsAction="never"
                         android:title="Alphabet"/>
 
-                <item
-                        android:id="@+id/menuSortGroup"
-                        android:orderInCategory="200"
-                        app:showAsAction="never"
-                        android:title="Group"/>
+
 
                 <item
                         android:id="@+id/menuSortDate"

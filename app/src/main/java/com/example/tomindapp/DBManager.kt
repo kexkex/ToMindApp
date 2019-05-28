@@ -16,11 +16,10 @@ open class DbManager {
     private val colTitle = "Title"
     private val colContent = "Content"
     private val colDate = "Date"
-    private val colGroup = "Group"
+
     private val dbVersion = 1
-    val ORDER_BY_DATE = "Date"
-    val ORDER_BY_TITLE = "Title"
-    val ORDER_BY_GROUP = "Group"
+
+
 
     private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT);"// + " TEXT, " + colGroup
     private var db: SQLiteDatabase? = null
@@ -36,9 +35,10 @@ open class DbManager {
         return ID
     }
 
-    fun queryAll(): Cursor {
+    fun querySearch(s:String): Cursor {
+        val args = arrayOf(s)
 
-        return db!!.rawQuery("select * from " + dbTable, null)
+        return db!!.query(dbTable, null, "Title like ?", args, null, null, null )
     }
 
     fun queryAllByOrder(order:String): Cursor {

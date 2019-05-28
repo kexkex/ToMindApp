@@ -40,9 +40,9 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
     }
 
     private fun applyClickEvents(holder: MyViewHolder, position: Int) {
-        holder.buEdit.setOnClickListener(View.OnClickListener { listener.onEditClicked(position) })
 
-        holder.buDone.setOnClickListener(View.OnClickListener { listener.onDoneClicked(position) })
+
+        holder.buDone.setOnClickListener(View.OnClickListener { listener.onWikiClicked(position) })
 
        holder.messageContainer.setOnClickListener(View.OnClickListener { listener.onMessageRowClicked(position) })
 
@@ -54,9 +54,7 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
     }
 
     interface MyAdapterListener {
-        fun onEditClicked(position: Int)
-
-        fun onDoneClicked(position: Int)
+        fun onWikiClicked(position: Int)
 
         fun onMessageRowClicked(position: Int)
 
@@ -65,16 +63,16 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
 
     inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
 
-        val tvRvGroup=itemView.tvRvGroup
+
         val tvRvTitle=itemView.tvRvTitle
         val tvRvDescr=itemView.tvRvDescr
         val tvRvDate=itemView.tvRvDate
-        val buEdit=itemView.buEdit
+
         val buDone=itemView.buDone
         val messageContainer=itemView.rvItem
 
         fun bind(interestWord: InterestWord) {
-            tvRvGroup.text = interestWord.groupId
+
             tvRvTitle.text = interestWord.interestWord
             tvRvDescr.text = interestWord.wordDescription
             tvRvDate.text = interestWord.date

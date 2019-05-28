@@ -143,7 +143,7 @@ class EditActivity : AppCompatActivity() {
             values.put("Title", tvEditWord.text.toString())
             values.put("Content", tvEditDescription.text.toString())
             values.put("Date", getCurrentDate())
-            //values.put("Group", "Group1")
+
 
             if (id == 0) {
                 val mID = dbManager.insert(values)
