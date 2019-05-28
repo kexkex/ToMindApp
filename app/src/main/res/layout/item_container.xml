@@ -24,7 +24,7 @@
             <TextView
                     android:text="TextView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/tvRvTitle" android:textSize="24sp"
+                    android:layout_height="wrap_content" android:id="@+id/tvRvTitle" android:textSize="18sp"
                     android:layout_gravity="left|center_vertical" android:layout_weight="1"
                     android:layout_marginRight="16dp" android:layout_marginLeft="16dp"/>
             <Button
@@ -37,7 +37,7 @@
         <TextView
                 android:text="TextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/tvRvDescr" android:textSize="18sp"
+                android:layout_height="wrap_content" android:id="@+id/tvRvDescr" android:textSize="12sp"
                 android:layout_marginLeft="16dp" android:layout_marginTop="8dp" android:layout_marginBottom="4dp"
                 android:layout_marginRight="16dp"/>
     </LinearLayout>

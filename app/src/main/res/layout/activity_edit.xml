@@ -25,7 +25,7 @@
             android:theme="@style/MyBorderlessButton" android:onClick="onWikiClick"/>
     <EditText
             android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_height="240dp"
             android:inputType="textMultiLine|textCapSentences"
             android:gravity="start|top"
             android:ems="10"
@@ -33,7 +33,7 @@
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="16dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="24dp"
             app:layout_constraintTop_toBottomOf="@+id/tvEditWord" android:theme="@style/MyEditText"
-            android:hint="Enter description here" android:maxLength="250" android:textSize="16sp"/>
+            android:hint="Enter description here" android:maxLength="350" android:textSize="14sp"/>
     <Button
             android:text="SAVE"
             android:layout_width="wrap_content"

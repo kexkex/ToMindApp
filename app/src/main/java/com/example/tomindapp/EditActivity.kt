@@ -24,7 +24,9 @@ import com.google.gson.reflect.TypeToken
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.lang.reflect.Array
 import java.net.HttpURLConnection
 import java.net.URL
@@ -37,7 +39,7 @@ import kotlin.concurrent.thread
 class EditActivity : AppCompatActivity() {
 
     var id=0
-    var responseTxt:String=""
+
     //var contains:Boolean=false
     @Volatile
     var responseText:String?=null
@@ -74,62 +76,76 @@ class EditActivity : AppCompatActivity() {
     }
 
 
-    fun onWikiClick(view: View){
+    fun onWikiClick(view: View)= runBlocking{
+        val job = launch {
+
         var wikiDescr:String?=""
         val word=tvEditWord.text.toString()
 
-        if (word!=null) wikiDescr=sendGet(word)
+        if (word!="") wikiDescr=sendGet(word)
 
-        tvEditDescription.setText(wikiDescr)
+        tvEditDescription.setText(wikiDescr) }
+        job.join()
 
     }
 
 
-    fun sendGet(word:String): String? {
+    suspend fun sendGet(word:String): String? {
+
+
         val progBar = progressBar2
         progBar.visibility= ProgressBar.INVISIBLE
         do {
             progBar.visibility= ProgressBar.VISIBLE
+            responseText=null
 
 
-            GlobalScope.launch {
+                thread {
 
 
-                val encodedWord = URLEncoder.encode(word, "utf8")
-                val url = URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
-                var resptxt = ""
+                    val encodedWord = URLEncoder.encode(word, "utf8")
+                    val url = URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
+                    var resptxt = ""
 
-                try {
-                    url.openConnection()
+                    try {
+                        url.openConnection()
 
-                    responseText = url.readText()
-                } catch (ex: Exception) {
-                    responseText = ex.toString()
+                        responseText = url.readText()
+                    } catch (ex: Exception) {
+                        responseText = ex.toString()
+                    }
+
+
+                    /*val urlConnection=url.openConnection() as HttpURLConnection
+                    urlConnection.requestMethod = "GET"
+                    var br=urlConnection.inputStream.bufferedReader(Charsets.UTF_8)
+
+                    var inputLine=br.readLine()
+                        while (inputLine!=null) {
+                            resptxt += inputLine
+                            inputLine = br.readLine()
+                        }
+                    responseText=resptxt*/
+
+
+
                 }
 
 
-                /*val urlConnection=url.openConnection() as HttpURLConnection
-                urlConnection.requestMethod = "GET"
-                var br=urlConnection.inputStream.bufferedReader(Charsets.UTF_8)
 
-                var inputLine=br.readLine()
-                    while (inputLine!=null) {
-                        resptxt += inputLine
-                        inputLine = br.readLine()
-                    }
-                responseText=resptxt*/
-            }
 
         } while (responseText==null)
 
+        val fromJsonText=fromJsonParse(responseText!!)
 
-       //responseText=fromJsonParse(responseText!!)
+
+
 
         progBar.visibility= ProgressBar.INVISIBLE
 
-        Toast.makeText(this, "$responseText", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "$fromJsonText", Toast.LENGTH_LONG).show()
 
-        return responseText
+        return fromJsonText
 
 
 
@@ -138,15 +154,15 @@ class EditActivity : AppCompatActivity() {
 
     fun fromJsonParse(jsonString:String):String  {
         var fromJsonString=""
-        val gson = Gson();
+        val gson = Gson()
 
 
         var type = object:TypeToken<ArrayList<Any>>(){}.type
-        var read = arrayListOf<Any>(gson.fromJson<Any>(jsonString,type))
-        var titles= arrayListOf<String>(read[1].toString())
-        var contents = arrayListOf<String>(read[2].toString())
-        var links = arrayListOf<String>(read[3].toString())
-        for (s in links) fromJsonString+=s
+        var read = arrayListOf<Any>(gson.fromJson(jsonString,type))
+        //var titles= arrayListOf(read[1].toString())
+        //var contents = arrayListOf(read[2].toString())
+        //var links = arrayListOf(read[3].toString())
+        fromJsonString+=read.get(0).toString()
         fromJsonString=replaceChar(fromJsonString)
         return fromJsonString
 

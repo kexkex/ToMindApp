@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
             adapter = viewAdapter
         }
 
-        fillList()
+        //fillList()
 
 
     }
@@ -284,27 +284,27 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         values.put("Title", "ываыва")
         values.put("Content", "ываыва")
         values.put("Date", getCurrentDate())
-        var mID = dbManager.insert(values)
+        dbManager.insert(values)
 
         values.put("Title", "чсмчмва")
         values.put("Content", "мчвмч")
         values.put("Date", getCurrentDate())
-        mID = dbManager.insert(values)
+        dbManager.insert(values)
 
         values.put("Title", "цукцук")
         values.put("Content", "alshd")
         values.put("Date", getCurrentDate())
-        mID = dbManager.insert(values)
+        dbManager.insert(values)
 
         values.put("Title", "еуцуецу")
         values.put("Content", "alshd")
         values.put("Date", getCurrentDate())
-        mID = dbManager.insert(values)
+        dbManager.insert(values)
 
         values.put("Title", "афывфцуф")
         values.put("Content", "alshd")
         values.put("Date", getCurrentDate())
-        mID = dbManager.insert(values)
+        dbManager.insert(values)
 
 
 
