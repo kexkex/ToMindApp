@@ -96,8 +96,9 @@ class EditActivity : AppCompatActivity() {
         val progBar = progressBar2
         progBar.visibility= ProgressBar.INVISIBLE
         do {
-            progBar.visibility= ProgressBar.VISIBLE
+
             responseText=null
+            progBar.visibility= ProgressBar.VISIBLE
 
 
                 thread {
@@ -141,7 +142,7 @@ class EditActivity : AppCompatActivity() {
 
 
 
-        progBar.visibility= ProgressBar.INVISIBLE
+        progBar.visibility= ProgressBar.GONE
 
         Toast.makeText(this, "$fromJsonText", Toast.LENGTH_LONG).show()
 
@@ -154,7 +155,9 @@ class EditActivity : AppCompatActivity() {
 
     fun fromJsonParse(jsonString:String):String  {
         var fromJsonString=""
-        val gson = Gson()
+        val jsp = JsonWikiParse(jsonString)
+        fromJsonString = jsp.link.get(0)
+        /*val gson = Gson()
 
 
         var type = object:TypeToken<ArrayList<Any>>(){}.type
@@ -163,7 +166,7 @@ class EditActivity : AppCompatActivity() {
         //var contents = arrayListOf(read[2].toString())
         //var links = arrayListOf(read[3].toString())
         fromJsonString+=read.get(0).toString()
-        fromJsonString=replaceChar(fromJsonString)
+        fromJsonString=replaceChar(fromJsonString)*/
         return fromJsonString
 
 
