@@ -16,12 +16,13 @@ open class DbManager {
     private val colTitle = "Title"
     private val colContent = "Content"
     private val colDate = "Date"
+    private val colWiki = "Link"
 
     private val dbVersion = 1
 
 
 
-    private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT);"// + " TEXT, " + colGroup
+    private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT " + colWiki +" TEXT);"// + " TEXT, " + colGroup
     private var db: SQLiteDatabase? = null
 
     constructor(context: Context) {

@@ -27,12 +27,6 @@
                     android:layout_height="wrap_content" android:id="@+id/tvRvTitle" android:textSize="18sp"
                     android:layout_gravity="left|center_vertical" android:layout_weight="1"
                     android:layout_marginRight="16dp" android:layout_marginLeft="16dp"/>
-            <Button
-                    android:text="Wiki"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/buDone" android:layout_weight="0"
-                    android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
-                    android:layout_marginRight="16dp"/>
         </LinearLayout>
         <TextView
                 android:text="TextView"
@@ -40,5 +34,11 @@
                 android:layout_height="wrap_content" android:id="@+id/tvRvDescr" android:textSize="12sp"
                 android:layout_marginLeft="16dp" android:layout_marginTop="8dp" android:layout_marginBottom="4dp"
                 android:layout_marginRight="16dp"/>
+        <Button
+                android:text="WIKI"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp" android:id="@+id/buDone" android:layout_weight="0"
+                android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
+                android:layout_marginRight="16dp" android:textAlignment="viewStart"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

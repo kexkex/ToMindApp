@@ -43,6 +43,9 @@ class EditActivity : AppCompatActivity() {
     //var contains:Boolean=false
     @Volatile
     var responseText:String?=null
+    var title=""
+    var descr=""
+    var link=""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +57,8 @@ class EditActivity : AppCompatActivity() {
         buEditSearch.setOnClickListener { v ->
             onSearchClick()
         }*/
-        val buWiki = buEditSearch
-        if (isNetworkConnected()) buWiki.visibility=Button.VISIBLE else buWiki.visibility=Button.INVISIBLE
+
+
 
         try {
             var bundle: Bundle = intent.extras
@@ -76,37 +79,47 @@ class EditActivity : AppCompatActivity() {
     }
 
 
-    fun onWikiClick(view: View)= runBlocking{
-        val job = launch {
+    fun onWikiClick(view: View){
 
-        var wikiDescr:String?=""
-        val word=tvEditWord.text.toString()
-
-        if (word!="") wikiDescr=sendGet(word)
-
-        tvEditDescription.setText(wikiDescr) }
-        job.join()
+        getWordFromWiki()
 
     }
 
 
-    suspend fun sendGet(word:String): String? {
+
+    fun getWordFromWiki () {
+        if (isNetworkConnected()) {
+
+            val progBar = progressBar2
+            progBar.visibility = ProgressBar.VISIBLE
+
+            val word = tvEditWord.text.toString()
+            if (word != "") sendGet(word)
+
+            tvEditDescription.setText(descr)
+            tvEditWord.setText(title)
+
+            progBar.visibility = ProgressBar.INVISIBLE
 
 
-        val progBar = progressBar2
-        progBar.visibility= ProgressBar.INVISIBLE
-        do {
+        } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
 
-            responseText=null
-            progBar.visibility= ProgressBar.VISIBLE
+    }
 
+    fun sendGet(word:String?) = runBlocking {
+
+        val job = launch {
+
+            do {
+
+                responseText = null
 
                 thread {
 
 
                     val encodedWord = URLEncoder.encode(word, "utf8")
-                    val url = URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
-                    var resptxt = ""
+                    val url =
+                        URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
 
                     try {
                         url.openConnection()
@@ -117,58 +130,27 @@ class EditActivity : AppCompatActivity() {
                     }
 
 
-                    /*val urlConnection=url.openConnection() as HttpURLConnection
-                    urlConnection.requestMethod = "GET"
-                    var br=urlConnection.inputStream.bufferedReader(Charsets.UTF_8)
-
-                    var inputLine=br.readLine()
-                        while (inputLine!=null) {
-                            resptxt += inputLine
-                            inputLine = br.readLine()
-                        }
-                    responseText=resptxt*/
-
-
-
                 }
 
 
+            } while (responseText == null)
+        }
+        job.join()
 
-
-        } while (responseText==null)
-
-        val fromJsonText=fromJsonParse(responseText!!)
-
-
-
-
-        progBar.visibility= ProgressBar.GONE
-
-        Toast.makeText(this, "$fromJsonText", Toast.LENGTH_LONG).show()
-
-        return fromJsonText
-
-
+        if (fromJsonParse(responseText!!)) Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
+        else Toast.makeText(this@EditActivity, "Search crash", Toast.LENGTH_LONG).show()
 
     }
 
 
-    fun fromJsonParse(jsonString:String):String  {
-        var fromJsonString=""
+    fun fromJsonParse(jsonString:String):Boolean  {
+
         val jsp = JsonWikiParse(jsonString)
-        fromJsonString = jsp.link.get(0)
-        /*val gson = Gson()
+        title = jsp.title.get(0)
+        descr = jsp.desc.get(0)
+        link = jsp.link.get(0)
 
-
-        var type = object:TypeToken<ArrayList<Any>>(){}.type
-        var read = arrayListOf<Any>(gson.fromJson(jsonString,type))
-        //var titles= arrayListOf(read[1].toString())
-        //var contents = arrayListOf(read[2].toString())
-        //var links = arrayListOf(read[3].toString())
-        fromJsonString+=read.get(0).toString()
-        fromJsonString=replaceChar(fromJsonString)*/
-        return fromJsonString
-
+        return title!=null&&descr!=null&&link!=null
 
     }
 
