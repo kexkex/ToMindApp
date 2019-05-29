@@ -23,10 +23,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import kotlinx.android.synthetic.main.activity_edit.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.lang.reflect.Array
 import java.net.HttpURLConnection
 import java.net.URL
@@ -48,10 +45,12 @@ class EditActivity : AppCompatActivity() {
     var link=""
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
        // R.layout.activity_main
+
 
         try {
             var bundle: Bundle? = intent.extras
@@ -78,6 +77,7 @@ class EditActivity : AppCompatActivity() {
 
     fun onWikiClick(view: View){
 
+
         getWordFromWiki()
 
     }
@@ -87,8 +87,7 @@ class EditActivity : AppCompatActivity() {
     fun getWordFromWiki () {
         if (isNetworkConnected()) {
 
-            val progBar = progressBar2
-            progBar.visibility = ProgressBar.VISIBLE
+
 
             val word = tvEditWord.text.toString()
             if (word != "") sendGet(word)
@@ -96,7 +95,7 @@ class EditActivity : AppCompatActivity() {
             tvEditDescription.setText(descr)
             tvEditWord.setText(title)
 
-            progBar.visibility = ProgressBar.GONE
+
 
 
         } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
@@ -104,6 +103,7 @@ class EditActivity : AppCompatActivity() {
     }
 
     suspend fun sendGetSusp(word:String?){
+
         do {
 
             responseText = null
@@ -139,7 +139,12 @@ class EditActivity : AppCompatActivity() {
         job.join()
 
         if (fromJsonParse(responseText!!)) Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
-        else Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
+        else {
+            Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
+            link=""
+            title="$word"
+            descr=""
+        }
 
     }
 
@@ -147,11 +152,12 @@ class EditActivity : AppCompatActivity() {
     fun fromJsonParse(jsonString:String):Boolean  {
 
         val jsp = JsonWikiParse(jsonString)
-        title = jsp.title.get(0)
-        descr = jsp.desc.get(0)
-        link = jsp.link.get(0)
+        if (jsp.title.isNotEmpty()) title = jsp.title.get(0)
+        if (jsp.desc.isNotEmpty()) descr = jsp.desc.get(0)
+        if (jsp.link.isNotEmpty()) link = jsp.link.get(0)
 
-        return title!=null&&descr!=null&&link!=null
+
+        return title!=""&&descr!=""&&link!=""
 
     }
 
