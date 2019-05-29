@@ -50,12 +50,13 @@ class EditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
        // R.layout.activity_main
-
-
+        val buRem = buRemove
+        buRem.visibility=Button.GONE
         try {
             var bundle: Bundle? = intent.extras
             if (bundle != null) {
                 id = bundle.getInt("MainActId", 0)
+                buRem.visibility=Button.VISIBLE
             }
             if (id != 0) {
                 title = bundle!!.getString("MainActTitle")
