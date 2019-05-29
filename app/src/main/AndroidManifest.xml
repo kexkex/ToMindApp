@@ -3,7 +3,6 @@
           package="com.example.tomindapp">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -13,7 +12,8 @@
             android:roundIcon="@drawable/application"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-
+        <activity android:name=".WebViewActivity">
+        </activity>
         <activity android:name=".EditActivity">
         </activity>
         <activity android:name=".MainActivity">

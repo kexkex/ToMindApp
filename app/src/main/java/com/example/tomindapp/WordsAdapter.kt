@@ -73,6 +73,8 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
 
         fun bind(interestWord: InterestWord) {
 
+            if (interestWord.link!="") buDone.visibility=Button.VISIBLE else buDone.visibility=Button.INVISIBLE
+
             tvRvTitle.text = interestWord.interestWord
             tvRvDescr.text = interestWord.wordDescription
             tvRvDate.text = interestWord.date

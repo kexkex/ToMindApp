@@ -32,7 +32,7 @@ import kotlin.collections.ArrayList
 class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
     override fun onWikiClicked(position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        openWiki(WordFactory.getList().get(position).link)
     }
 
     override fun onMessageRowClicked(position: Int) {
@@ -77,6 +77,12 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
     }
 
+    fun openWiki(link:String){
+        val intent = Intent(this, WebViewActivity::class.java)
+        intent.putExtra("Link",link)
+        startActivity(intent)
+    }
+
     fun getCurrentDate():String{
 
         val currentDate = Date()
@@ -104,38 +110,6 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         viewAdapter.notifyDataSetChanged()
 
         return super.onOptionsItemSelected(item)
-    }
-
-
-
-    private fun sortList(arrayList: ArrayList<InterestWord>,sortType:String):ArrayList<InterestWord>{
-
-         var arrSorted=arrayList
-         when(sortType){
-             "Alphabet"->{
-
-                fun selector(a:InterestWord):String=a.interestWord
-                arrayList.sortBy { selector(it) }
-
-
-                }
-
-            "Date"->{
-                fun selector(a:InterestWord):String=a.date
-                arrayList.sortBy { selector(it) }
-
-            }
-        }
-        arrSorted=arrayList
-        WordFactory.updateWords(arrayList)
-        viewAdapter.notifyDataSetChanged()
-        return arrSorted
-
-
-
-
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -233,9 +207,9 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
                 val title = dbCursor.getString(dbCursor.getColumnIndex("Title"))
                 val content = dbCursor.getString(dbCursor.getColumnIndex("Content"))
                 val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
+                val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
 
-
-                WordFactory.addWords(InterestWord(id, title, content, date))
+                WordFactory.addWords(InterestWord(id, title, content, date, link))
 
             } while (dbCursor.moveToPrevious())
         }
@@ -256,9 +230,10 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
                 val title = dbCursor.getString(dbCursor.getColumnIndex("Title"))
                 val content = dbCursor.getString(dbCursor.getColumnIndex("Content"))
                 val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
+                val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
 
 
-                    WordFactory.addWords(InterestWord(id, title, content, date))
+                    WordFactory.addWords(InterestWord(id, title, content, date, link))
 
             } while (dbCursor.moveToPrevious())
         }
@@ -274,6 +249,7 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         intent.putExtra("MainActId", word.idWord)
         intent.putExtra("MainActTitle", word.interestWord)
         intent.putExtra("MainActContent", word.wordDescription)
+        intent.putExtra("MainActLink", word.link)
         startActivity(intent)
     }
 

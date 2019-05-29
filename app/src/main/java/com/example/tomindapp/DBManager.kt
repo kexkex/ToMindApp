@@ -22,7 +22,7 @@ open class DbManager {
 
 
 
-    private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT " + colWiki +" TEXT);"// + " TEXT, " + colGroup
+    private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT, " + colWiki +" TEXT);"// + " TEXT, " + colGroup
     private var db: SQLiteDatabase? = null
 
     constructor(context: Context) {

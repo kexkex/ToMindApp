@@ -51,22 +51,19 @@ class EditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
-        R.layout.activity_main
-
-        /*
-        buEditSearch.setOnClickListener { v ->
-            onSearchClick()
-        }*/
-
-
+       // R.layout.activity_main
 
         try {
-            var bundle: Bundle = intent.extras
-            id = bundle.getInt("MainActId", 0)
+            var bundle: Bundle? = intent.extras
+            if (bundle != null) {
+                id = bundle.getInt("MainActId", 0)
+            }
             if (id != 0) {
-
-                tvEditWord.setText(bundle.getString("MainActTitle"))
-                tvEditDescription.setText(bundle.getString("MainActContent"))
+                title = bundle!!.getString("MainActTitle")
+                descr = bundle!!.getString("MainActContent")
+                tvEditWord.setText(title)
+                tvEditDescription.setText(descr)
+                link = bundle!!.getString("MainActLink")
             }
         } catch (ex: Exception) {
         }
@@ -99,46 +96,50 @@ class EditActivity : AppCompatActivity() {
             tvEditDescription.setText(descr)
             tvEditWord.setText(title)
 
-            progBar.visibility = ProgressBar.INVISIBLE
+            progBar.visibility = ProgressBar.GONE
 
 
         } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
 
     }
 
+    suspend fun sendGetSusp(word:String?){
+        do {
+
+            responseText = null
+
+            thread {
+
+
+                val encodedWord = URLEncoder.encode(word, "utf8")
+                val url =
+                    URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
+
+                try {
+                    url.openConnection()
+
+                    responseText = url.readText()
+                } catch (ex: Exception) {
+                    responseText = ex.toString()
+                }
+
+
+            }
+
+
+        } while (responseText == null)
+    }
+
     fun sendGet(word:String?) = runBlocking {
 
         val job = launch {
 
-            do {
-
-                responseText = null
-
-                thread {
-
-
-                    val encodedWord = URLEncoder.encode(word, "utf8")
-                    val url =
-                        URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
-
-                    try {
-                        url.openConnection()
-
-                        responseText = url.readText()
-                    } catch (ex: Exception) {
-                        responseText = ex.toString()
-                    }
-
-
-                }
-
-
-            } while (responseText == null)
+            sendGetSusp(word)
         }
         job.join()
 
         if (fromJsonParse(responseText!!)) Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
-        else Toast.makeText(this@EditActivity, "Search crash", Toast.LENGTH_LONG).show()
+        else Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
 
     }
 
@@ -196,7 +197,17 @@ class EditActivity : AppCompatActivity() {
     }
 
 
+    fun wordContains():Boolean{
+        var contains = false
+        val t = tvEditWord.text.toString()
+        for (w in WordFactory.getList()) {
+            if (w.interestWord==t) {
+                contains=true
 
+            }
+        }
+        return contains
+    }
 
 
     fun saveButtonClick(view: View){
@@ -209,9 +220,11 @@ class EditActivity : AppCompatActivity() {
             values.put("Title", tvEditWord.text.toString())
             values.put("Content", tvEditDescription.text.toString())
             values.put("Date", getCurrentDate())
+            values.put("Link", link)
 
 
             if (id == 0) {
+                if (wordContains()) {Toast.makeText(this, "Word already exists!", Toast.LENGTH_LONG).show()} else {
                 val mID = dbManager.insert(values)
 
                 if (mID > 0) {
@@ -219,16 +232,16 @@ class EditActivity : AppCompatActivity() {
                     finish()
                 } else {
                     Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
-                }
+                }}
             } else {
                 var selectionArs = arrayOf(id.toString())
                 val mID = dbManager.update(values, "Id=?", selectionArs)
 
                 if (mID > 0) {
-                    Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Update note successfully!", Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Fail to update note!", Toast.LENGTH_LONG).show()
                 }
             }
         }else{

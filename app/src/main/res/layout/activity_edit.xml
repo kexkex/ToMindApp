@@ -6,6 +6,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".EditActivity" android:background="@color/colorBackground">
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar2"
+            app:layout_constraintStart_toStartOf="@+id/tvEditDescription"
+            app:layout_constraintEnd_toEndOf="@+id/tvEditDescription"
+            app:layout_constraintTop_toTopOf="@+id/tvEditDescription"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEditDescription" android:visibility="gone"/>
     <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -54,13 +63,4 @@
             android:textColor="@color/colorTextOnS"
             android:onClick="removeButtonClick" android:gravity="center"
             android:theme="@style/MyButton"/>
-    <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar2"
-            app:layout_constraintStart_toStartOf="@+id/tvEditDescription"
-            app:layout_constraintEnd_toEndOf="@+id/tvEditDescription"
-            app:layout_constraintTop_toTopOf="@+id/tvEditDescription"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEditDescription" android:visibility="invisible"/>
 </android.support.constraint.ConstraintLayout>
