@@ -6,16 +6,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".EditActivity" android:background="@color/colorBackground">
-    <EditText
+    <AutoCompleteTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="textCapWords"
-            android:ems="10"
             android:id="@+id/tvEditWord"
             android:layout_marginTop="16dp" app:layout_constraintTop_toTopOf="parent"
-            android:theme="@style/MyEditText" android:textSize="18sp" android:hint="Enter ineresting word here"
+            android:textSize="18sp" android:hint="Enter ineresting word here"
             android:layout_marginStart="16dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/buEditSearch"/>
+            android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/buEditSearch"
+            android:dropDownHeight="wrap_content" android:theme="@style/MyEditText"
+            android:dropDownWidth="match_parent"/>
+
     <Button
             android:text="WIKI"
             android:layout_width="wrap_content"

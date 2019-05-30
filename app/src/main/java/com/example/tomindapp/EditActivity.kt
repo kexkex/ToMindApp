@@ -12,9 +12,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -43,6 +41,12 @@ class EditActivity : AppCompatActivity() {
     var title=""
     var descr=""
     var link=""
+    var titleArrayList= arrayListOf<String>()
+    var descrArrayList=arrayListOf<String>()
+
+    var linkArrayList= arrayListOf<String>()
+    val WORDS_LIMIT=5
+    lateinit var tvAutoComplTitle:AutoCompleteTextView
 
 
 
@@ -52,6 +56,17 @@ class EditActivity : AppCompatActivity() {
        // R.layout.activity_main
         val buRem = buRemove
         buRem.visibility=Button.GONE
+
+
+
+        tvAutoComplTitle= tvEditWord
+        var adapter = MyAutoCompliteAdapter(this,titleArrayList)
+        tvAutoComplTitle.threshold=3
+        tvAutoComplTitle.setAdapter(adapter)
+        tvAutoComplTitle.setOnItemClickListener { parent, view, position, id -> onDropDownItemClick() }
+
+
+
         try {
             var bundle: Bundle? = intent.extras
             if (bundle != null) {
@@ -75,60 +90,82 @@ class EditActivity : AppCompatActivity() {
         return networkInfo != null && networkInfo.isConnected //3
     }
 
+    fun onDropDownItemClick(){
+        val ttl=tvEditWord.text.toString()
+        for (i in 0..(titleArrayList.size-1)) {
+            if (ttl==titleArrayList[i]) {
+                title=titleArrayList[i]
+                descr=descrArrayList[i]
+                link=linkArrayList[i]
+            }
+
+        }
+        clearArrs()
+
+        tvEditDescription.setText(descr)
+        //tvEditWord.setText(title)
+    }
+
+    fun clearArrs(){
+        if (titleArrayList.size!=0) titleArrayList.clear()
+        if (descrArrayList.size!=0) descrArrayList.clear()
+        if (descrArrayList.size!=0) linkArrayList.clear()
+
+
+    }
+
 
     fun onWikiClick(view: View){
+        clearArrs()
+        if (isNetworkConnected()) {
+
+            getWordFromWiki()
+            if (titleArrayList.size>1) {
+                tvAutoComplTitle.showDropDown()
+            } else {
+                clearArrs()
+            tvEditDescription.setText(descr)
+            tvEditWord.setText(title)}
 
 
-        getWordFromWiki()
-
+        } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
     }
 
 
 
     fun getWordFromWiki () {
-        if (isNetworkConnected()) {
-
-
-
-            val word = tvEditWord.text.toString()
-            if (word != "") sendGet(word)
-
-            tvEditDescription.setText(descr)
-            tvEditWord.setText(title)
-
-
-
-
-        } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
+        clearArrs()
+        val word = tvEditWord.text.toString()
+        if (word != "") sendGet(word)
 
     }
 
     suspend fun sendGetSusp(word:String?){
-
+        var count=0
+        val encodedWord = URLEncoder.encode(word, "utf8")
+        val url =
+            URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
         do {
-
+            count++
             responseText = null
 
             thread {
 
-
-                val encodedWord = URLEncoder.encode(word, "utf8")
-                val url =
-                    URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=1")
-
                 try {
+                    if (isNetworkConnected()){
                     url.openConnection()
-
-                    responseText = url.readText()
+                    responseText = url.readText()}
                 } catch (ex: Exception) {
-                    responseText = ex.toString()
+
+                    Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
+
                 }
 
 
             }
 
 
-        } while (responseText == null)
+        } while (responseText == null||count<10)
     }
 
     fun sendGet(word:String?) = runBlocking {
@@ -139,26 +176,45 @@ class EditActivity : AppCompatActivity() {
         }
         job.join()
 
-        if (fromJsonParse(responseText!!)) Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
-        else {
+        if (responseText!=null) {
+
+            if (fromJsonParse(responseText!!)) {
+                Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
+                title=titleArrayList[0]
+                descr=descrArrayList[0]
+                link= linkArrayList[0]
+            }
+
+            else {
+                clearArrs()
+                Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
+                link=""
+                title="$word"
+                descr=""
+            }
+        } else {
+            clearArrs()
             Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
             link=""
             title="$word"
-            descr=""
-        }
-
+            descr=""}
     }
 
 
     fun fromJsonParse(jsonString:String):Boolean  {
-
+        var bul=false
         val jsp = JsonWikiParse(jsonString)
-        if (jsp.title.isNotEmpty()) title = jsp.title.get(0)
-        if (jsp.desc.isNotEmpty()) descr = jsp.desc.get(0)
-        if (jsp.link.isNotEmpty()) link = jsp.link.get(0)
+        if (jsp.title.isNotEmpty()&&jsp.desc.isNotEmpty()&&jsp.link.isNotEmpty()){
+            bul=true
+            clearArrs()
+            for (i in 0..(jsp.title.size-1)) {
+                titleArrayList.add(jsp.title[i])
+                descrArrayList.add(jsp.desc[i])
+                linkArrayList.add(jsp.link[i])
+            }
+        }
 
-
-        return title!=""&&descr!=""&&link!=""
+        return bul
 
     }
 
