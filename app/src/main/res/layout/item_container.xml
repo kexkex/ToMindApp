@@ -29,11 +29,22 @@
                 android:layout_height="wrap_content" android:id="@+id/tvRvDescr" android:textSize="12sp"
                 android:layout_marginLeft="16dp" android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"/>
-        <Button
-                android:text="SHOW IN WIKI"
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/buDone" android:layout_weight="0"
-                android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
-                android:layout_marginRight="16dp" android:textAlignment="viewStart"/>
+                android:layout_height="wrap_content" android:layout_weight="0" android:layout_gravity="right">
+            <Button
+                    android:text="SHOW IN WIKI"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/buDone" android:layout_weight="0"
+                    android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
+                    android:layout_marginRight="0" android:textAlignment="viewStart"/>
+            <Button
+                    android:text="EDIT"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/buEdit" android:layout_weight="0"
+                    android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
+                    android:layout_marginRight="0" android:textAlignment="viewStart"/>
+        </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

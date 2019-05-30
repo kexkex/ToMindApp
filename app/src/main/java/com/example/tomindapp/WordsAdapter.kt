@@ -43,7 +43,7 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
 
 
         holder.buDone.setOnClickListener(View.OnClickListener { listener.onWikiClicked(position) })
-
+        holder.buEdit.setOnClickListener(View.OnClickListener { listener.onEditClicked(position) })
        holder.messageContainer.setOnClickListener(View.OnClickListener { listener.onMessageRowClicked(position) })
 
         holder.messageContainer.setOnLongClickListener(View.OnLongClickListener { view ->
@@ -58,6 +58,8 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
 
         fun onMessageRowClicked(position: Int)
 
+        fun onEditClicked(position: Int)
+
         fun onRowLongClicked(position: Int)
     }
 
@@ -67,7 +69,7 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
         val tvRvTitle=itemView.tvRvTitle
         val tvRvDescr=itemView.tvRvDescr
         val tvRvDate=itemView.tvRvDate
-
+        val buEdit=itemView.buEdit
         val buDone=itemView.buDone
         val messageContainer=itemView.rvItem
 

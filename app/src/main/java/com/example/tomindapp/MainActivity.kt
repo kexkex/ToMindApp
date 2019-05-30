@@ -30,13 +30,17 @@ import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
+    override fun onEditClicked(position: Int) {
+        editWord(WordFactory.getWord(position))
+    }
 
     override fun onWikiClicked(position: Int) {
         openWiki(WordFactory.getList().get(position).link)
     }
 
     override fun onMessageRowClicked(position: Int) {
-        editWord(WordFactory.getWord(position))
+        showBottomSheetFragment(WordFactory.getWord(position))
+
     }
 
     override fun onRowLongClicked(position: Int) {
@@ -75,6 +79,22 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         //fillList()
 
 
+    }
+
+    fun showBottomSheetFragment(word: InterestWord){
+        val bsf = BottomSheetFragment()
+
+        var bundle = Bundle()
+        bundle.putString("title",word.interestWord)
+        bundle.putString("descr",word.wordDescription)
+        bundle.putString("link",word.link)
+        bsf.arguments=bundle
+        /*val sfm = supportFragmentManager
+        val sft = sfm.beginTransaction()
+        sft.replace(R.id.container,bsf)
+        sft.commit()*/
+
+        bsf.show(supportFragmentManager,bsf.tag)
     }
 
     fun openWiki(link:String){
