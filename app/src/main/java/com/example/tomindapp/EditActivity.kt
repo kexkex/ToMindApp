@@ -140,41 +140,48 @@ class EditActivity : AppCompatActivity() {
 
     }
 
-    suspend fun sendGetSusp(word:String?){
-        var count=0
-        val encodedWord = URLEncoder.encode(word, "utf8")
-        val url =
-            URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
-        do {
-            count++
-            responseText = null
+    fun sendGetAsync(word:String?){
 
-            thread {
+        val async= object:Thread(Runnable {
+            var count=0
+
+            var response:String?
+
+            val encodedWord = URLEncoder.encode(word, "utf8")
+            val url =
+                URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
+            do {
+                count++
+                response = null
 
                 try {
                     if (isNetworkConnected()){
-                    url.openConnection()
-                    responseText = url.readText()}
+                        url.openConnection()
+                        response = url.readText()}
                 } catch (ex: Exception) {
 
                     Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
 
                 }
+            } while (response == null)
+            responseText=response
+        }){}
+        async.start()
+        async.join(3000)
 
 
-            }
 
 
-        } while (responseText == null||count<10)
+
+
+
     }
 
-    fun sendGet(word:String?) = runBlocking {
+    fun sendGet(word:String?) {
 
-        val job = launch {
 
-            sendGetSusp(word)
-        }
-        job.join()
+            sendGetAsync(word)
+
 
         if (responseText!=null) {
 
@@ -323,6 +330,34 @@ class EditActivity : AppCompatActivity() {
             val alert = builder.create()
             alert.show()
 
+        }
+    }
+
+    inner class AsyncGetRespose:AsyncTask<String,Void,String>() {
+        override fun doInBackground(vararg params: String?): String {
+            var count=0
+            var word = ""
+            var response:String?
+            if (params.size>0) word = params[0]!!
+            val encodedWord = URLEncoder.encode(word, "utf8")
+            val url =
+                URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
+            do {
+                count++
+                responseText = null
+
+            try {
+                if (isNetworkConnected()){
+                    url.openConnection()
+                    responseText = url.readText()}
+            } catch (ex: Exception) {
+
+                Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
+
+            }
+            } while (responseText == null)
+
+            return ""
         }
     }
 
