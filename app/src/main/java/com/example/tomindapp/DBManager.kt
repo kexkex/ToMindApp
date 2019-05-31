@@ -9,7 +9,6 @@ import android.widget.Toast
 
 open class DbManager {
 
-
     private val dbName = "JSANotes"
     private val dbTable = "Words"
     private val colId = "Id"
@@ -17,12 +16,10 @@ open class DbManager {
     private val colContent = "Content"
     private val colDate = "Date"
     private val colWiki = "Link"
-
     private val dbVersion = 1
 
-
-
     private val CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + dbTable + " (" + colId + " INTEGER PRIMARY KEY," + colTitle + " TEXT, " + colContent + " TEXT, " + colDate +" TEXT, " + colWiki +" TEXT);"// + " TEXT, " + colGroup
+
     private var db: SQLiteDatabase? = null
 
     constructor(context: Context) {
@@ -31,30 +28,25 @@ open class DbManager {
     }
 
     fun insert(values: ContentValues): Long {
-
         val ID = db!!.insert(dbTable, "", values)
         return ID
     }
 
     fun querySearch(s:String): Cursor {
         val args = arrayOf(s)
-
         return db!!.query(dbTable, null, "Title like ?", args, null, null, null )
     }
 
     fun queryAllByOrder(order:String): Cursor {
-
         return db!!.rawQuery("SELECT * FROM " + dbTable + " ORDER BY "+ order+";", null)
     }
 
     fun delete(selection: String, selectionArgs: Array<String>): Int {
-
         val count = db!!.delete(dbTable, selection, selectionArgs)
         return count
     }
 
     fun update(values: ContentValues, selection: String, selectionargs: Array<String>): Int {
-
         val count = db!!.update(dbTable, values, selection, selectionargs)
         return count
     }

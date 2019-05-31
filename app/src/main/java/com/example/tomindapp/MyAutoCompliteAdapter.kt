@@ -11,10 +11,15 @@ import android.widget.TextView
 import java.util.ArrayList
 
 class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String>):BaseAdapter(),Filterable{
+
     var myTitleArr = titleArr
+
     override fun getFilter(): Filter {
+
         myTitleArr = titleArr
+
         var filter = object:Filter(){
+
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 var filterResults = FilterResults()
                 var filteredTitles = arrayListOf<String>()
@@ -38,11 +43,12 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
             }
 
         }
-                return filter
+        return filter
     }
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+
         var retView:View?
         val title = titleArr[position]
         if (convertView==null){
@@ -66,6 +72,4 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
     override fun getCount(): Int {
         return titleArr.size
     }
-
-
 }

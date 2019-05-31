@@ -3,76 +3,61 @@ package com.example.tomindapp
 import android.content.ContentValues
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.net.ConnectivityManager
-import android.os.AsyncTask
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.*
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.coroutines.*
-import java.lang.reflect.Array
-import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 class EditActivity : AppCompatActivity() {
 
-    var id=0
 
-    //var contains:Boolean=false
+
     @Volatile
     var responseText:String?=null
+
+    var id=0
     var title=""
     var descr=""
     var link=""
     var titleArrayList= arrayListOf<String>()
     var descrArrayList=arrayListOf<String>()
-
     var linkArrayList= arrayListOf<String>()
+
     val WORDS_LIMIT=5
+
     lateinit var tvAutoComplTitle:AutoCompleteTextView
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
-       // R.layout.activity_main
+
         val buRem = buRemove
         buRem.visibility=Button.GONE
 
-
+        var adapter = MyAutoCompliteAdapter(this,titleArrayList)
 
         tvAutoComplTitle= tvEditWord
-        var adapter = MyAutoCompliteAdapter(this,titleArrayList)
-        tvAutoComplTitle.threshold=3
+        tvAutoComplTitle.threshold=4
         tvAutoComplTitle.setAdapter(adapter)
         tvAutoComplTitle.setOnItemClickListener { parent, view, position, id -> onDropDownItemClick() }
 
-
-
         try {
             var bundle: Bundle? = intent.extras
+
             if (bundle != null) {
                 id = bundle.getInt("MainActId", 0)
                 title = bundle.getString("MainActTitle",null)
             }
+
             if (id != 0) {
                 title = bundle!!.getString("MainActTitle")
                 descr = bundle!!.getString("MainActContent")
@@ -90,12 +75,15 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun isNetworkConnected(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager //1
-        val networkInfo = connectivityManager.activeNetworkInfo //2
-        return networkInfo != null && networkInfo.isConnected //3
+
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        return networkInfo != null && networkInfo.isConnected
     }
 
     fun onDropDownItemClick(){
+
         val ttl=tvEditWord.text.toString()
         for (i in 0..(titleArrayList.size-1)) {
             if (ttl==titleArrayList[i]) {
@@ -103,20 +91,17 @@ class EditActivity : AppCompatActivity() {
                 descr=descrArrayList[i]
                 link=linkArrayList[i]
             }
-
         }
         clearArrs()
 
         tvEditDescription.setText(descr)
-        //tvEditWord.setText(title)
+        tvEditWord.setText(title)
     }
 
     fun clearArrs(){
         if (titleArrayList.size!=0) titleArrayList.clear()
         if (descrArrayList.size!=0) descrArrayList.clear()
         if (descrArrayList.size!=0) linkArrayList.clear()
-
-
     }
 
 
@@ -125,24 +110,20 @@ class EditActivity : AppCompatActivity() {
         if (isNetworkConnected()) {
 
             getWordFromWiki()
+
             if (titleArrayList.size>1) {
-                tvAutoComplTitle.showDropDown()
+               tvAutoComplTitle.showDropDown()
             } else {
                 clearArrs()
-            tvEditDescription.setText(descr)
-            tvEditWord.setText(title)}
-
-
+                tvEditDescription.setText(descr)
+                tvEditWord.setText(title)
+            }
         } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
     }
 
-
-
     fun getWordFromWiki () {
-        clearArrs()
         val word = tvEditWord.text.toString()
         if (word != "") sendGet(word)
-
     }
 
     fun sendGetAsync(word:String?){
@@ -173,20 +154,11 @@ class EditActivity : AppCompatActivity() {
         }){}
         async.start()
         async.join(3000)
-
-
-
-
-
-
-
     }
 
     fun sendGet(word:String?) {
 
-
             sendGetAsync(word)
-
 
         if (responseText!=null) {
 
@@ -195,9 +167,7 @@ class EditActivity : AppCompatActivity() {
                 title=titleArrayList[0]
                 descr=descrArrayList[0]
                 link= linkArrayList[0]
-            }
-
-            else {
+            } else {
                 clearArrs()
                 Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
                 link=""
@@ -227,7 +197,6 @@ class EditActivity : AppCompatActivity() {
         }
 
         return bul
-
     }
 
     fun replaceChar(str:String):String{
@@ -243,13 +212,10 @@ class EditActivity : AppCompatActivity() {
     fun getCurrentDate():String{
 
         val currentDate = Date()
-        // Форматирование времени как "день.месяц.год"
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         val dateText = dateFormat.format(currentDate)
-        // Форматирование времени как "часы:минуты:секунды"
         val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         val timeText = timeFormat.format(currentDate)
-
 
         return "$dateText $timeText"
     }
@@ -271,14 +237,12 @@ class EditActivity : AppCompatActivity() {
 
     }
 
-
     fun wordContains():Boolean{
         var contains = false
         val t = tvEditWord.text.toString()
         for (w in WordFactory.getList()) {
             if (w.interestWord==t) {
                 contains=true
-
             }
         }
         return contains
@@ -297,17 +261,18 @@ class EditActivity : AppCompatActivity() {
             values.put("Date", getCurrentDate())
             values.put("Link", link)
 
-
             if (id == 0) {
-                if (wordContains()) {Toast.makeText(this, "Word already exists!", Toast.LENGTH_LONG).show()} else {
-                val mID = dbManager.insert(values)
+                if (wordContains()) {Toast.makeText(this, "Word already exists!", Toast.LENGTH_LONG).show()}
+                else {
+                    val mID = dbManager.insert(values)
 
-                if (mID > 0) {
-                    Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
-                    finish()
-                } else {
-                    Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
-                }}
+                    if (mID > 0) {
+                        Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
+                    }
+                }
             } else {
                 var selectionArs = arrayOf(id.toString())
                 val mID = dbManager.update(values, "Id=?", selectionArs)
@@ -322,50 +287,19 @@ class EditActivity : AppCompatActivity() {
         }else{
             val builder = AlertDialog.Builder(this)
             builder.apply {
-                setTitle("Error")
+                setTitle("ERROR")
                 setMessage("Enter word title and description")
                 setCancelable(false)
-                setNegativeButton("OK", object:DialogInterface.OnClickListener {
+                setNegativeButton("CLOSE", object:DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
                         dialog!!.cancel()
                     }
                 })
-
             }
             val alert = builder.create()
             alert.show()
-
         }
     }
-
-    inner class AsyncGetRespose:AsyncTask<String,Void,String>() {
-        override fun doInBackground(vararg params: String?): String {
-            var count=0
-            var word = ""
-            var response:String?
-            if (params.size>0) word = params[0]!!
-            val encodedWord = URLEncoder.encode(word, "utf8")
-            val url =
-                URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
-            do {
-                count++
-                responseText = null
-
-            try {
-                if (isNetworkConnected()){
-                    url.openConnection()
-                    responseText = url.readText()}
-            } catch (ex: Exception) {
-
-                Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
-
-            }
-            } while (responseText == null)
-
-            return ""
-        }
-    }
-
 
 }
 

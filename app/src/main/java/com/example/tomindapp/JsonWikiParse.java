@@ -16,11 +16,11 @@ public class JsonWikiParse {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList>(){}.getType();
         ArrayList read = gson.fromJson(s,type);
+
         bigTitle = read.get(0).toString();
+
         title = (ArrayList<String>) read.get(1);
         desc = (ArrayList<String>) read.get(2);
         link = (ArrayList<String>) read.get(3);
-
-
     }
 }

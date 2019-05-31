@@ -8,26 +8,53 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.DatePicker
 import android.widget.SearchView
-import android.widget.Toast
-import android.widget.Toolbar
 import com.javasampleapproach.kotlin.sqlite.DbManager
-import kotlinx.android.synthetic.main.activity_edit.*
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item_container.view.*
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var list: ArrayList<InterestWord>
+    private lateinit var sortOrder:String
+    val ORDER_BY_DATE = "Date"
+    val ORDER_BY_TITLE = "Title DESC"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        sortOrder = ORDER_BY_DATE
+
+        loadListOfWords()
+        list = WordFactory.getList()
+
+        viewManager = LinearLayoutManager(this)
+        viewAdapter = WordsAdapter(WordFactory.getList(),this)
+        recyclerView = findViewById<RecyclerView>(R.id.rvWords).apply {
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+    }
+
+    override fun onResume() {
+        loadListOfWords()
+        viewAdapter.notifyDataSetChanged()
+
+        val clipText = clipBoardIntercept()
+        if (clipText!=null) addClipDataToEditAct(clipText)
+
+        super.onResume()
+    }
+
     override fun onEditClicked(position: Int) {
         editWord(WordFactory.getWord(position))
     }
@@ -41,90 +68,13 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
     }
 
-    override fun onRowLongClicked(position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var list: ArrayList<InterestWord>
-    private lateinit var sortOrder:String
-    val ORDER_BY_DATE = "Date"
-    val ORDER_BY_TITLE = "Title DESC"
-
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        sortOrder=ORDER_BY_DATE
-
-
-        loadListOfWords()
-        list=WordFactory.getList()
-
-
-        viewManager = LinearLayoutManager(this)
-        viewAdapter = WordsAdapter(WordFactory.getList(),this)
-        recyclerView = findViewById<RecyclerView>(R.id.rvWords).apply {
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
-
-
-        //fillList()
-
-
-    }
-
-    fun showBottomSheetFragment(word: InterestWord){
-        val bsf = BottomSheetFragment()
-
-        var bundle = Bundle()
-        bundle.putString("title",word.interestWord)
-        bundle.putString("descr",word.wordDescription)
-        bundle.putString("link",word.link)
-        bsf.arguments=bundle
-        /*val sfm = supportFragmentManager
-        val sft = sfm.beginTransaction()
-        sft.replace(R.id.container,bsf)
-        sft.commit()*/
-
-        bsf.show(supportFragmentManager,bsf.tag)
-    }
-
-    fun openWiki(link:String){
-        val intent = Intent(this, WebViewActivity::class.java)
-        intent.putExtra("Link",link)
-        startActivity(intent)
-    }
-
-    fun getCurrentDate():String{
-
-        val currentDate = Date()
-        // Форматирование времени как "день.месяц.год"
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val dateText = dateFormat.format(currentDate)
-        // Форматирование времени как "часы:минуты:секунды"
-        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        val timeText = timeFormat.format(currentDate)
-
-
-        return "$dateText $timeText"
-    }
-
-
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
         when (item!!.itemId){
             R.id.menuSortAlphabet -> sortOrder=ORDER_BY_TITLE
-
             R.id.menuSortDate -> sortOrder=ORDER_BY_DATE
         }
+
         loadListOfWords()
         viewAdapter.notifyDataSetChanged()
 
@@ -132,10 +82,12 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        //Inflate the menu; this adds items to the action bar if it is present.
+
         menuInflater.inflate(R.menu.menu_main, menu)
+
         val sv=menu.findItem(R.id.app_bar_search).actionView as SearchView
         val sm=getSystemService(Context.SEARCH_SERVICE) as SearchManager
+
         sv.setSearchableInfo(sm.getSearchableInfo(componentName))
         sv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -155,89 +107,70 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
             }
         })
+
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun updateDbFromList (arrayList: ArrayList<InterestWord>){
 
-        var dbManager=DbManager(this)
-        for (word in arrayList) {
-            var selectionArs = arrayOf(word.idWord.toString())
-            var values=ContentValues()
-            values.put("Title",word.interestWord)
-            values.put("Content",word.wordDescription)
-            values.put("Date",word.date)
-            val mID = dbManager.update(values, "Id=?", selectionArs)
+    fun showBottomSheetFragment(word: InterestWord){
 
-            /*if (mID > 0) {
-                Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
-                finish()
-            } else {
-                Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
-            }*/
-        }
+        val bsf = BottomSheetFragment()
+
+        var bundle = Bundle()
+        bundle.putString("title",word.interestWord)
+        bundle.putString("descr",word.wordDescription)
+        bundle.putString("link",word.link)
+
+        bsf.arguments=bundle
+        bsf.show(supportFragmentManager,bsf.tag)
     }
 
-    fun setRecyclerViewItemTouchListener(){
-        val itemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
-            override fun onMove(p0: RecyclerView, p1: RecyclerView.ViewHolder, p2: RecyclerView.ViewHolder): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+    fun openWiki(link:String){
 
-            override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-        }
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        val intent = Intent(this, WebViewActivity::class.java)
+        intent.putExtra("Link",link)
+        startActivity(intent)
     }
 
+    fun getCurrentDate():String{
 
+        val currentDate = Date()
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val dateText = dateFormat.format(currentDate)
+        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        val timeText = timeFormat.format(currentDate)
+
+        return "$dateText $timeText"
+    }
 
     fun fabClick(view: View){
         val intent = Intent(this, EditActivity::class.java)
         startActivity(intent)
-
-
-    }
-
-
-
-    override fun onResume() {
-        loadListOfWords()
-        viewAdapter.notifyDataSetChanged()
-        val clipText = clipBoardIntercept()
-        if (clipText!=null) addClipDataToEditAct(clipText)
-        super.onResume()
     }
 
     fun clipBoardIntercept():String?{
         try {
 
-        val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = clipBoard.primaryClip
 
-        val clipData = clipBoard.primaryClip
-        if (clipData!=null) {
-            var text = clipData.getItemAt(0).text
-            if (text.length<=20&&text.length>=4) {
-                return text.toString()
+            if (clipData!=null) {
+                var text = clipData.getItemAt(0).text
+                if (text.length<=20&&text.length>=4) {
+                    return text.toString()
+                } else return null
             } else return null
-
-        } else return null}
+        }
         catch (ex:Throwable){
             return null
         }
-
     }
 
     fun clearClipBoard(){
+
         val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("","")
         clipBoard.primaryClip=clipData
-
-
     }
 
     fun addClipDataToEditAct(s:String){
@@ -260,24 +193,20 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         }
         val alert = builder.create()
         alert.show()
-
     }
 
     fun startEditActWithClip(s:String){
+
         var intent = Intent(this, EditActivity::class.java)
         intent.putExtra("MainActTitle", s)
         startActivity(intent)
     }
 
-    fun reloadListofWords(arrayList: ArrayList<InterestWord>){
-
-    }
-
     private fun searchInListOfWords(s:String){
+
         var dbManager=DbManager(this)
         var dbCursor = dbManager.querySearch(s)
         WordFactory.clearList()
-
 
         if (dbCursor.moveToLast()) {
 
@@ -296,11 +225,11 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
     }
 
     private fun loadListOfWords(){
+
         var dbManager=DbManager(this)
         var dbCursor = dbManager.queryAllByOrder(sortOrder)
 
         WordFactory.clearList()
-
 
         if (dbCursor.moveToLast()) {
 
@@ -311,28 +240,26 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
                 val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
                 val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
 
-
-                    WordFactory.addWords(InterestWord(id, title, content, date, link))
+                WordFactory.addWords(InterestWord(id, title, content, date, link))
 
             } while (dbCursor.moveToPrevious())
         }
-
-
-
     }
 
-
-
     fun editWord(word: InterestWord) {
+
         var intent = Intent(this, EditActivity::class.java)
+
         intent.putExtra("MainActId", word.idWord)
         intent.putExtra("MainActTitle", word.interestWord)
         intent.putExtra("MainActContent", word.wordDescription)
         intent.putExtra("MainActLink", word.link)
+
         startActivity(intent)
     }
 
     fun fillList(){
+
         var dbManager=DbManager(this)
         var values=ContentValues()
 
@@ -360,16 +287,6 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         values.put("Content", "alshd")
         values.put("Date", getCurrentDate())
         dbManager.insert(values)
-
-
-
-
-
-
-
-
-
-
     }
 
 

@@ -1,29 +1,26 @@
 package com.example.tomindapp
 
-import android.content.Context
-import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
-import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import kotlinx.android.synthetic.main.item_container.view.*
 import com.example.tomindapp.WordsAdapter.MyViewHolder
 
 
 
 class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterListener):
-    RecyclerView.Adapter<WordsAdapter.MyViewHolder>()  {
+    RecyclerView.Adapter<MyViewHolder>()  {
+
     var listener: MyAdapterListener
+
     init {
         this.listener=listener
     }
 
-
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): MyViewHolder {
+
         val v=LayoutInflater.from(p0.context).inflate(R.layout.item_container,p0,false)
 
         return MyViewHolder(v)
@@ -40,31 +37,18 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
     }
 
     private fun applyClickEvents(holder: MyViewHolder, position: Int) {
-
-
         holder.buDone.setOnClickListener(View.OnClickListener { listener.onWikiClicked(position) })
         holder.buEdit.setOnClickListener(View.OnClickListener { listener.onEditClicked(position) })
-       holder.messageContainer.setOnClickListener(View.OnClickListener { listener.onMessageRowClicked(position) })
-
-        holder.messageContainer.setOnLongClickListener(View.OnLongClickListener { view ->
-            listener.onRowLongClicked(position)
-            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            true
-        })
+        holder.messageContainer.setOnClickListener(View.OnClickListener { listener.onMessageRowClicked(position) })
     }
 
     interface MyAdapterListener {
         fun onWikiClicked(position: Int)
-
         fun onMessageRowClicked(position: Int)
-
         fun onEditClicked(position: Int)
-
-        fun onRowLongClicked(position: Int)
     }
 
     inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
-
 
         val tvRvTitle=itemView.tvRvTitle
         val tvRvDescr=itemView.tvRvDescr
@@ -80,7 +64,6 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
             tvRvTitle.text = interestWord.interestWord
             tvRvDescr.text = interestWord.wordDescription
             tvRvDate.text = interestWord.date
-
         }
 
     }

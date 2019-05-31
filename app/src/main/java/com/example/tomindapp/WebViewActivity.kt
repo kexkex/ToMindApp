@@ -18,7 +18,6 @@ class WebViewActivity : AppCompatActivity() {
             if (bundle != null) {
                 url = bundle.getString("Link", null)
             }
-
         } catch (ex: Exception) {
         }
 
@@ -27,6 +26,5 @@ class WebViewActivity : AppCompatActivity() {
         if (url!=null) webView.loadUrl(url) else
             Toast.makeText(this, "No such page", Toast.LENGTH_LONG).show()
             finish()
-
     }
 }
