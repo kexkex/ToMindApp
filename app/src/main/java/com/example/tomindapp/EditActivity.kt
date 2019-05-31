@@ -71,7 +71,7 @@ class EditActivity : AppCompatActivity() {
             var bundle: Bundle? = intent.extras
             if (bundle != null) {
                 id = bundle.getInt("MainActId", 0)
-                buRem.visibility=Button.VISIBLE
+                title = bundle.getString("MainActTitle",null)
             }
             if (id != 0) {
                 title = bundle!!.getString("MainActTitle")
@@ -79,6 +79,11 @@ class EditActivity : AppCompatActivity() {
                 tvEditWord.setText(title)
                 tvEditDescription.setText(descr)
                 link = bundle!!.getString("MainActLink")
+                buRem.visibility=Button.VISIBLE
+            } else {
+                if (title!=null){
+                    tvEditWord.setText(title)
+                }
             }
         } catch (ex: Exception) {
         }

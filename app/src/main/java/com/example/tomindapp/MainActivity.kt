@@ -1,10 +1,7 @@
 package com.example.tomindapp
 
 import android.app.SearchManager
-import android.content.ContentValues
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -24,6 +21,7 @@ import com.javasampleapproach.kotlin.sqlite.DbManager
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_container.view.*
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -75,6 +73,7 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+
 
         //fillList()
 
@@ -204,10 +203,70 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
     }
 
+
+
     override fun onResume() {
         loadListOfWords()
         viewAdapter.notifyDataSetChanged()
+        val clipText = clipBoardIntercept()
+        if (clipText!=null) addClipDataToEditAct(clipText)
         super.onResume()
+    }
+
+    fun clipBoardIntercept():String?{
+        try {
+
+        val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        val clipData = clipBoard.primaryClip
+        if (clipData!=null) {
+            var text = clipData.getItemAt(0).text
+            if (text.length<=20&&text.length>=4) {
+                return text.toString()
+            } else return null
+
+        } else return null}
+        catch (ex:Throwable){
+            return null
+        }
+
+    }
+
+    fun clearClipBoard(){
+        val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("","")
+        clipBoard.primaryClip=clipData
+
+
+    }
+
+    fun addClipDataToEditAct(s:String){
+
+        val builder = AlertDialog.Builder(this)
+        builder.apply {
+            setTitle("${s.capitalize()}")
+            setMessage("There is word - ${s.capitalize()} in clipboard! Wish you to add it?")
+            setCancelable(true)
+            setPositiveButton("YES") { dialog, which ->
+                dialog!!.cancel()
+                clearClipBoard()
+                startEditActWithClip(s.capitalize())
+            }
+            setNegativeButton("NO"
+            ) { dialog, which ->
+                dialog!!.cancel()
+                clearClipBoard()
+            }
+        }
+        val alert = builder.create()
+        alert.show()
+
+    }
+
+    fun startEditActWithClip(s:String){
+        var intent = Intent(this, EditActivity::class.java)
+        intent.putExtra("MainActTitle", s)
+        startActivity(intent)
     }
 
     fun reloadListofWords(arrayList: ArrayList<InterestWord>){
