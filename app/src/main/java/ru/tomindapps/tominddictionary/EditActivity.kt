@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 import android.content.ContentValues
 import android.content.Context
@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.*
 import com.javasampleapproach.kotlin.sqlite.DbManager
+import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.coroutines.*
 import java.net.URL
@@ -44,7 +45,7 @@ class EditActivity : AppCompatActivity() {
         val buRem = buRemove
         buRem.visibility=Button.GONE
 
-        var adapter = MyAutoCompliteAdapter(this,titleArrayList)
+        var adapter = MyAutoCompliteAdapter(this, titleArrayList)
 
         tvAutoComplTitle= tvEditWord
         tvAutoComplTitle.threshold=4

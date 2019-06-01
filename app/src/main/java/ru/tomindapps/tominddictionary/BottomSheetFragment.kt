@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.support.design.widget.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.bottom_sheet_fragment.view.*
 
 

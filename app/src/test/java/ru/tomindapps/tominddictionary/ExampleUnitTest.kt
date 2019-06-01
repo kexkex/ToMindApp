@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 import org.junit.Test
 

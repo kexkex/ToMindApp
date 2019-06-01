@@ -1,4 +1,4 @@
-package com.example.tomindapp;
+package ru.tomindapps.tominddictionary;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

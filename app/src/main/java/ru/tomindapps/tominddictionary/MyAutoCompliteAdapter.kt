@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import ru.tomindapps.tominddictionary.R
 import java.util.ArrayList
 
 class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String>):BaseAdapter(),Filterable{

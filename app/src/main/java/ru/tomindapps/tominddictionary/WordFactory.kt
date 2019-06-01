@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 object WordFactory {
 
@@ -12,7 +12,7 @@ object WordFactory {
         return listOfWords
     }
 
-    fun getWord(id:Int):InterestWord{
+    fun getWord(id:Int): InterestWord {
         return listOfWords[id]
     }
 

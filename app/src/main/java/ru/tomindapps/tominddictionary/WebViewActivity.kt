@@ -1,8 +1,9 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.activity_web_view.*
 
 class WebViewActivity : AppCompatActivity() {

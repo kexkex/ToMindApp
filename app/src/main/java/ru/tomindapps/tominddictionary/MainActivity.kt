@@ -1,4 +1,4 @@
-package com.example.tomindapp
+package ru.tomindapps.tominddictionary
 
 import android.app.SearchManager
 import android.content.*
@@ -14,12 +14,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
 import com.javasampleapproach.kotlin.sqlite.DbManager
+import ru.tomindapps.tominddictionary.R
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
+class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -39,7 +40,8 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         list = WordFactory.getList()
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = WordsAdapter(WordFactory.getList(),this)
+        viewAdapter =
+            WordsAdapter(WordFactory.getList(), this)
 
         recyclerView = findViewById<RecyclerView>(R.id.rvWords).apply {
             layoutManager = viewManager
@@ -220,7 +222,15 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
                 val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
                 val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
 
-                WordFactory.addWords(InterestWord(id, title, content, date, link))
+                WordFactory.addWords(
+                    InterestWord(
+                        id,
+                        title,
+                        content,
+                        date,
+                        link
+                    )
+                )
 
             } while (dbCursor.moveToPrevious())
         }
@@ -243,7 +253,15 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
                 val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
                 val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
 
-                WordFactory.addWords(InterestWord(id, title, content, date, link))
+                WordFactory.addWords(
+                    InterestWord(
+                        id,
+                        title,
+                        content,
+                        date,
+                        link
+                    )
+                )
 
             } while (dbCursor.moveToPrevious())
         }
