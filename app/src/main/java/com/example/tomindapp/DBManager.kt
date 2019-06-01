@@ -61,7 +61,7 @@ open class DbManager {
 
         override fun onCreate(db: SQLiteDatabase?) {
             db!!.execSQL(CREATE_TABLE_SQL)
-            Toast.makeText(this.context, " database is created", Toast.LENGTH_LONG).show()
+           //Toast.makeText(this.context, " database is created", Toast.LENGTH_LONG).show()
         }
 
         override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

@@ -15,11 +15,12 @@
         <activity android:name=".WebViewActivity">
         </activity>
         <activity android:name=".EditActivity"
-                  android:label="EditWord"
+                  android:label="@string/edit_activity_lable"
                   android:screenOrientation="portrait"
                   android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".MainActivity"
+                  android:label="@string/first_activity_lable"
                   android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

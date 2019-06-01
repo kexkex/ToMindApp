@@ -34,13 +34,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_weight="0" android:layout_gravity="right">
             <Button
-                    android:text="SHOW IN WIKI"
+                    android:text="@string/open_wiki"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/buDone"
                     android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
-                    android:textAlignment="viewStart"/>
+                    />
             <Button
-                    android:text="EDIT"
+                    android:text="@string/edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/buEdit"
                     android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"

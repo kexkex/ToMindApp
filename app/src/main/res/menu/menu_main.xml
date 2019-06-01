@@ -14,7 +14,7 @@
                         android:id="@+id/menuSortAlphabet"
                         android:orderInCategory="100"
                         app:showAsAction="never"
-                        android:title="Alphabet"/>
+                        android:title="@string/alphabet"/>
 
 
 
@@ -22,7 +22,7 @@
                         android:id="@+id/menuSortDate"
                         android:orderInCategory="300"
                         app:showAsAction="never"
-                        android:title="Date"/>
+                        android:title="@string/date"/>
 
             </group>
         </menu>

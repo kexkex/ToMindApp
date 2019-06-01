@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">ToMind Dictionary</string>
+    <string name="first_activity_lable">Словарик</string>
+    <string name="edit_activity_lable">Правка</string>
+    <string name="yes">ДА</string>
+    <string name="no">НЕТ</string>
+    <string name="ok">OK</string>
+    <string name="save">SAVE</string>
+    <string name="edit">EDIT</string>
+    <string name="remove">REMOVE</string>
+    <string name="network_is_not_connected">Нет доступа в интернет!</string>
+    <string name="search_done">Поиск выполнен успешно!</string>
+    <string name="search_fail">Поиск неудался!</string>
+    <string name="remove_note_successfully">Запись удалена успешно!</string>
+    <string name="remove_note_fail">Не удалось удалить запись!</string>
+    <string name="add_note_successfully">Запись добавлена успешно!</string>
+    <string name="add_note_fail">Не удалось добавить запись!</string>
+    <string name="update_note_successfully">Запись обновлена успешно!</string>
+    <string name="update_note_fail">Не удалось обновить запись!</string>
+    <string name="error">ОШИБКА</string>
+    <string name="enter_word_title_and_description">Ведите слово и его значение!</string>
+
+    <string name="close">ЗАКРЫТЬ</string>
+    <string name="type_word_here">Введите слово</string>
+    <string name="type_descr_here">Введите описание</string>
+
+
+    <string name="alphabet">По алфавиту</string>
+    <string name="date">По дате</string>
+
+    <string name="word_already_exists">Слово уже есть в словаре!</string>
+    <string name="open_wiki">SHOW WIKI</string>
+
+
+
+
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

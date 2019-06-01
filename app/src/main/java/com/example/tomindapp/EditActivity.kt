@@ -31,6 +31,7 @@ class EditActivity : AppCompatActivity() {
     var titleArrayList= arrayListOf<String>()
     var descrArrayList=arrayListOf<String>()
     var linkArrayList= arrayListOf<String>()
+    var locale = "ru"
 
     val WORDS_LIMIT=5
 
@@ -49,6 +50,8 @@ class EditActivity : AppCompatActivity() {
         tvAutoComplTitle.threshold=4
         tvAutoComplTitle.setAdapter(adapter)
         tvAutoComplTitle.setOnItemClickListener { parent, view, position, id -> onDropDownItemClick() }
+
+        locale=Locale.getDefault().language
 
         try {
             var bundle: Bundle? = intent.extras
@@ -123,7 +126,7 @@ class EditActivity : AppCompatActivity() {
                 tvEditDescription.setText(descr)
                 tvEditWord.setText(title)
             }
-        } else Toast.makeText(this@EditActivity, "Network is NOT connected!", Toast.LENGTH_LONG).show()
+        } else Toast.makeText(this@EditActivity, resources.getString(R.string.network_is_not_connected), Toast.LENGTH_LONG).show()
     }
 
     fun getWordFromWiki () {
@@ -140,7 +143,7 @@ class EditActivity : AppCompatActivity() {
 
             val encodedWord = URLEncoder.encode(word, "utf8")
             val url =
-                URL("https://ru.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
+                URL("https://$locale.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
             do {
                 count++
                 response = null
@@ -168,20 +171,20 @@ class EditActivity : AppCompatActivity() {
         if (responseText!=null) {
 
             if (fromJsonParse(responseText!!)) {
-                Toast.makeText(this@EditActivity, "Search Done", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@EditActivity, resources.getString(R.string.search_done), Toast.LENGTH_LONG).show()
                 title=titleArrayList[0]
                 descr=descrArrayList[0]
                 link= linkArrayList[0]
             } else {
                 clearArrs()
-                Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@EditActivity, resources.getString(R.string.search_fail), Toast.LENGTH_LONG).show()
                 link=""
                 title="$word"
                 descr=""
             }
         } else {
             clearArrs()
-            Toast.makeText(this@EditActivity, "Search Fail", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@EditActivity, resources.getString(R.string.search_fail), Toast.LENGTH_LONG).show()
             link=""
             title="$word"
             descr=""}
@@ -233,10 +236,10 @@ class EditActivity : AppCompatActivity() {
         val mID = dbManager.delete( "Id=?", selectionArs)
 
         if (mID > 0) {
-            Toast.makeText(this, "Remove note successfully!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, resources.getString(R.string.remove_note_successfully), Toast.LENGTH_LONG).show()
             finish()
         } else {
-            Toast.makeText(this, "Fail to remove note!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, resources.getString(R.string.remove_note_fail), Toast.LENGTH_LONG).show()
         }
         }
 
@@ -267,15 +270,15 @@ class EditActivity : AppCompatActivity() {
             values.put("Link", link)
 
             if (id == 0) {
-                if (wordContains()) {Toast.makeText(this, "Word already exists!", Toast.LENGTH_LONG).show()}
+                if (wordContains()) {Toast.makeText(this, resources.getString(R.string.word_already_exists), Toast.LENGTH_LONG).show()}
                 else {
                     val mID = dbManager.insert(values)
 
                     if (mID > 0) {
-                        Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, resources.getString(R.string.add_note_successfully), Toast.LENGTH_LONG).show()
                         finish()
                     } else {
-                        Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, resources.getString(R.string.add_note_fail), Toast.LENGTH_LONG).show()
                     }
                 }
             } else {
@@ -283,19 +286,19 @@ class EditActivity : AppCompatActivity() {
                 val mID = dbManager.update(values, "Id=?", selectionArs)
 
                 if (mID > 0) {
-                    Toast.makeText(this, "Update note successfully!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, resources.getString(R.string.update_note_successfully), Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    Toast.makeText(this, "Fail to update note!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, resources.getString(R.string.update_note_fail), Toast.LENGTH_LONG).show()
                 }
             }
         }else{
             val builder = AlertDialog.Builder(this)
             builder.apply {
-                setTitle("ERROR")
-                setMessage("Enter word title and description")
+                setTitle(resources.getString(R.string.error))
+                setMessage(resources.getString(R.string.enter_word_title_and_description))
                 setCancelable(false)
-                setNegativeButton("CLOSE", object:DialogInterface.OnClickListener {
+                setNegativeButton(resources.getString(R.string.close), object:DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
                         dialog!!.cancel()
                     }

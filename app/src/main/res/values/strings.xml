@@ -1,6 +1,39 @@
 <resources>
     <string name="app_name">ToMind Dictionary</string>
+    <string name="first_activity_lable">Dictionary</string>
+    <string name="edit_activity_lable">Edit your word</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="ok">OK</string>
+    <string name="save">SAVE</string>
+    <string name="edit">EDIT</string>
+    <string name="remove">REMOVE</string>
+    <string name="network_is_not_connected">Network is NOT connected!</string>
+    <string name="search_done">Search was successfull!</string>
+    <string name="search_fail">Search failed!</string>
+    <string name="remove_note_successfully">Remove note successfully!</string>
+    <string name="remove_note_fail">Fail to remove note!</string>
+    <string name="add_note_successfully">Add note successfully!</string>
+    <string name="add_note_fail">Fail to add note!</string>
+    <string name="update_note_successfully">Update note successfully!</string>
+    <string name="update_note_fail">Fail to update note!</string>
+    <string name="error">ERROR</string>
+    <string name="enter_word_title_and_description">Enter word title and description!</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="close">CLOSE</string>
+    <string name="type_word_here">Enter interesting word</string>
+    <string name="type_descr_here">Enter words description</string>
+
+
+    <string name="alphabet">Alphabet</string>
+    <string name="date">Date</string>
+
+    <string name="word_already_exists">Word is already exists!</string>
+    <string name="open_wiki">SHOW WIKI</string>
+
+
+
+
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

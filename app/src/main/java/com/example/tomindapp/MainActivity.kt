@@ -181,14 +181,14 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
         val builder = AlertDialog.Builder(this)
         builder.apply {
             setTitle("${s.capitalize()}")
-            setMessage("There is word - ${s.capitalize()} in clipboard! Wish you to add it?")
+            setMessage("У вас есть слово - ${s.capitalize()} в буфере обмена! Хотите его добавить?")
             setCancelable(true)
-            setPositiveButton("YES") { dialog, which ->
+            setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
                 dialog!!.cancel()
                 clearClipBoard()
                 startEditActWithClip(s.capitalize())
             }
-            setNegativeButton("NO"
+            setNegativeButton(resources.getString(R.string.no)
             ) { dialog, which ->
                 dialog!!.cancel()
                 clearClipBoard()
