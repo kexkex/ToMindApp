@@ -15,7 +15,9 @@
         <activity android:name=".WebViewActivity">
         </activity>
         <activity android:name=".EditActivity"
-                  android:screenOrientation="portrait">
+                  android:label="EditWord"
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".MainActivity"
                   android:screenOrientation="portrait">

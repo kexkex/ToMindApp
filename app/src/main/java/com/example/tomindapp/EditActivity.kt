@@ -74,6 +74,11 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        finish()
+        super.onBackPressed()
+    }
+
     private fun isNetworkConnected(): Boolean {
 
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

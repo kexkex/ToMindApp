@@ -4,7 +4,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" android:id="@+id/rvItem" android:background="@color/colorTextOnP"
+        android:orientation="horizontal" android:id="@+id/rvItem" android:background="@color/colorBackground"
         android:layout_marginLeft="2dp" android:layout_marginRight="2dp" android:layout_marginTop="2dp"
 >
 
@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/buEdit"
                     android:theme="@style/MyBorderlessButton" android:layout_gravity="right|center_vertical|end"
-                    android:textAlignment="viewStart"/>
+            />
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

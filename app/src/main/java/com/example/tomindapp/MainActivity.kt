@@ -6,6 +6,7 @@ import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -39,8 +40,10 @@ class MainActivity : AppCompatActivity(),WordsAdapter.MyAdapterListener {
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = WordsAdapter(WordFactory.getList(),this)
+
         recyclerView = findViewById<RecyclerView>(R.id.rvWords).apply {
             layoutManager = viewManager
+            addItemDecoration(object:DividerItemDecoration(this@MainActivity,LinearLayoutManager.VERTICAL){})
             adapter = viewAdapter
         }
     }
