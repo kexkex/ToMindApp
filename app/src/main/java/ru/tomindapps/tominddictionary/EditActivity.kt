@@ -45,7 +45,7 @@ class EditActivity : AppCompatActivity() {
         val buRem = buRemove
         buRem.visibility=Button.GONE
 
-        var adapter = MyAutoCompliteAdapter(this, titleArrayList)
+        val adapter = MyAutoCompliteAdapter(this, titleArrayList)
 
         tvAutoComplTitle= tvEditWord
         tvAutoComplTitle.threshold=4
@@ -102,7 +102,6 @@ class EditActivity : AppCompatActivity() {
             }
         }
         clearArrs()
-
         tvEditDescription.setText(descr)
         tvEditWord.setText(title)
     }
@@ -111,28 +110,25 @@ class EditActivity : AppCompatActivity() {
         if (titleArrayList.size!=0) titleArrayList.clear()
         if (descrArrayList.size!=0) descrArrayList.clear()
         if (descrArrayList.size!=0) linkArrayList.clear()
+
     }
 
 
     fun onWikiClick(view: View){
         clearArrs()
         if (isNetworkConnected()) {
-
-            getWordFromWiki()
-
-            if (titleArrayList.size>1) {
-               tvAutoComplTitle.showDropDown()
-            } else {
-                clearArrs()
-                tvEditDescription.setText(descr)
-                tvEditWord.setText(title)
+            val word = tvEditWord.text.toString()
+            if  (word != "") {
+                sendGet (word)
+                if (titleArrayList.size > 1) {
+                    tvAutoComplTitle.showDropDown()
+                } else {
+                    clearArrs()
+                    tvEditDescription.setText(descr)
+                    tvEditWord.setText(title)
+                }
             }
         } else Toast.makeText(this@EditActivity, resources.getString(R.string.network_is_not_connected), Toast.LENGTH_LONG).show()
-    }
-
-    fun getWordFromWiki () {
-        val word = tvEditWord.text.toString()
-        if (word != "") sendGet(word)
     }
 
     fun sendGetAsync(word:String?){

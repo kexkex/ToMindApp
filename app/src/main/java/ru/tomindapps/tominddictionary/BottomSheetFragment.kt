@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.bottom_sheet_fragment.view.*
+import java.net.URLDecoder
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
@@ -21,12 +22,14 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         val tvTitle = v.tvSheetTitle
         val tvDescr = v.tvSheetDescr
         val tvLink = v.tvSheetLink
+        var link = ""
 
         val bundle = arguments
         if (bundle!=null){
             tvTitle.text=bundle!!.getString("title")
             tvDescr.text=bundle!!.getString("descr")
-            tvLink.text=bundle!!.getString("link")}
+            link = bundle!!.getString("link")}
+            tvLink.text= URLDecoder.decode(link)
 
         return v
         }

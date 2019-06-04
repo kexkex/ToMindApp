@@ -16,16 +16,14 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
     var myTitleArr = titleArr
 
     override fun getFilter(): Filter {
-
-        myTitleArr = titleArr
-
         var filter = object:Filter(){
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 var filterResults = FilterResults()
                 var filteredTitles = arrayListOf<String>()
+
                 if (constraint!=null) {
-                    for (t in myTitleArr) {
+                    for (t in titleArr) {
                         if (t.contains(constraint,true)) filteredTitles.add(t)
                     }
                     filterResults.values = filteredTitles
@@ -37,10 +35,9 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 if (results!=null&&results.count>0){
-                    titleArr=results.values as ArrayList<String>
+                    //titleArr=results.values as ArrayList<String>
                     notifyDataSetChanged()
                 } else {notifyDataSetInvalidated()}
-                myTitleArr.clear()
             }
 
         }
