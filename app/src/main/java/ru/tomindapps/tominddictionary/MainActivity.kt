@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText!=null) {
-                    searchInListOfWords("%"+newText!!+"%")
+                    searchInListOfWords("%"+ newText +"%")
                     viewAdapter.notifyDataSetChanged()
                 }
                 return false

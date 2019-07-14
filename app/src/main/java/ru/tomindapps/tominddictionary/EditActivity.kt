@@ -45,6 +45,8 @@ class EditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
 
+        setTitle(R.string.edit_activity_lable)
+
         progressBar = findViewById(R.id.progressBar)
         progressBar.visibility = ProgressBar.INVISIBLE
 
@@ -74,10 +76,10 @@ class EditActivity : AppCompatActivity() {
 
             if (id != 0) {
                 title = bundle!!.getString("MainActTitle")
-                descr = bundle!!.getString("MainActContent")
+                descr = bundle.getString("MainActContent")
                 tvEditWord.setText(title)
                 tvEditDescription.setText(descr)
-                link = bundle!!.getString("MainActLink")
+                link = bundle.getString("MainActLink")
                 buRem.visibility=Button.VISIBLE
             } else {
                 if (title!=null){
@@ -169,7 +171,7 @@ class EditActivity : AppCompatActivity() {
 
         if (response!=null) {
 
-            if (fromJsonParse(response!!)) {
+            if (fromJsonParse(response)) {
                 Toast.makeText(this@EditActivity, resources.getString(R.string.search_done), Toast.LENGTH_LONG).show()
                 title=titleArrayList[0]
                 descr=descrArrayList[0]

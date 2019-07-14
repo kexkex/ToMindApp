@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">ToMind Dictionary</string>
-    <string name="first_activity_lable">ToMind</string>
+    <string name="first_activity_lable">Словарь ToMind</string>
     <string name="edit_activity_lable">Правка</string>
     <string name="yes">ДА</string>
     <string name="no">НЕТ</string>
     <string name="ok">OK</string>
-    <string name="save">SAVE</string>
-    <string name="edit">EDIT</string>
-    <string name="remove">REMOVE</string>
+    <string name="save">СОХРАНИТЬ</string>
+    <string name="edit">ИСПРАВИТЬ</string>
+    <string name="remove">УДАЛИТЬ</string>
     <string name="network_is_not_connected">Нет доступа в интернет!</string>
     <string name="search_done">Поиск выполнен успешно!</string>
     <string name="search_fail">Поиск неудался!</string>
@@ -29,7 +29,7 @@
     <string name="date">По дате</string>
 
     <string name="word_already_exists">Слово уже есть в словаре!</string>
-    <string name="open_wiki">SHOW WIKI</string>
+    <string name="open_wiki">ОТКРЫТЬ WIKI</string>
 
 
 

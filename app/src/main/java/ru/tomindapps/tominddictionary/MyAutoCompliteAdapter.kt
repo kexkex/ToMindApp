@@ -54,9 +54,9 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
             retView = inflater.inflate(R.layout.dropdown_item,parent,false)
         } else {retView=convertView}
 
-        retView!!.findViewById<TextView>(R.id.tvDropListItem).setText(title)
+        retView!!.findViewById<TextView>(R.id.tvDropListItem).text = title
 
-        return retView!!
+        return retView
     }
 
     override fun getItem(position: Int): Any {

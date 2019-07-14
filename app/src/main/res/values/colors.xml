@@ -7,7 +7,7 @@
     <color name="colorSecondaryDark">#c66900</color>
     <color name="colorSecondaryLight">#ffc947</color>
     <color name="colorTextOnP">#FFFFFF</color>
-    <color name="colorTextOnS">#000000</color>
+    <color name="colorTextOnS">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorAccent">#ffc947</color>
 </resources>

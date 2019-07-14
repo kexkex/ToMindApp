@@ -26,9 +26,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
         val bundle = arguments
         if (bundle!=null){
-            tvTitle.text=bundle!!.getString("title")
-            tvDescr.text=bundle!!.getString("descr")
-            link = bundle!!.getString("link")}
+            tvTitle.text= bundle.getString("title")
+            tvDescr.text= bundle.getString("descr")
+            link = bundle.getString("link")}
             tvLink.text= URLDecoder.decode(link)
 
         return v
