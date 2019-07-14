@@ -4,19 +4,20 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.DialogInterface
 import android.net.ConnectivityManager
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.View
 import android.widget.*
 import com.javasampleapproach.kotlin.sqlite.DbManager
-import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.activity_edit.*
-import kotlinx.coroutines.*
 import java.net.URL
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class EditActivity : AppCompatActivity() {
 
@@ -37,10 +38,14 @@ class EditActivity : AppCompatActivity() {
     val WORDS_LIMIT=5
 
     lateinit var tvAutoComplTitle:AutoCompleteTextView
+    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
+
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.visibility = ProgressBar.INVISIBLE
 
         val buRem = buRemove
         buRem.visibility=Button.GONE
@@ -60,6 +65,7 @@ class EditActivity : AppCompatActivity() {
             if (bundle != null) {
                 id = bundle.getInt("MainActId", 0)
                 title = bundle.getString("MainActTitle",null)
+                setTitle(title)
             }
 
             if (id != 0) {
@@ -119,55 +125,47 @@ class EditActivity : AppCompatActivity() {
         if (isNetworkConnected()) {
             val word = tvEditWord.text.toString()
             if  (word != "") {
-                sendGet (word)
-                if (titleArrayList.size > 1) {
-                    tvAutoComplTitle.showDropDown()
-                } else {
-                    clearArrs()
-                    tvEditDescription.setText(descr)
-                    tvEditWord.setText(title)
-                }
+                DoGet().newInstance().execute(word)
+
             }
         } else Toast.makeText(this@EditActivity, resources.getString(R.string.network_is_not_connected), Toast.LENGTH_LONG).show()
     }
 
-    fun sendGetAsync(word:String?){
-
-        val async= object:Thread(Runnable {
-            var count=0
-
-            var response:String?
-
-            val encodedWord = URLEncoder.encode(word, "utf8")
-            val url =
-                URL("https://$locale.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
-            do {
-                count++
-                response = null
-
-                try {
-                    if (isNetworkConnected()){
-                        url.openConnection()
-                        response = url.readText()}
-                } catch (ex: Exception) {
-
-                    Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
-
-                }
-            } while (response == null)
-            responseText=response
-        }){}
-        async.start()
-        async.join(3000)
+    fun updateUi(){
+        if (titleArrayList.isNotEmpty()) {
+            tvAutoComplTitle.showDropDown()
+        } else {
+            clearArrs()
+            tvEditDescription.setText(descr)
+            tvEditWord.setText(title)
+        }
     }
 
-    fun sendGet(word:String?) {
+   fun sendGetAsync(word:String?):String?{
 
-            sendGetAsync(word)
+       val encodedWord = URLEncoder.encode(word, "utf8")
+       val url =
+           URL("https://$locale.wikipedia.org/w/api.php?action=opensearch&search=$encodedWord&prop=info&inprop=url&limit=$WORDS_LIMIT")
+       var response: String? = null
+       try {
+               if (isNetworkConnected()){
+                   url.openConnection()
+                   response = url.readText()}
+           } catch (ex: Exception) {
+//           Toast.makeText(this@EditActivity, ex.toString(), Toast.LENGTH_LONG).show()
+       }
 
-        if (responseText!=null) {
+       return response
 
-            if (fromJsonParse(responseText!!)) {
+    }
+
+    fun parseResponse(response:String?) {
+
+           // sendGetAsync(word)
+
+        if (response!=null) {
+
+            if (fromJsonParse(response!!)) {
                 Toast.makeText(this@EditActivity, resources.getString(R.string.search_done), Toast.LENGTH_LONG).show()
                 title=titleArrayList[0]
                 descr=descrArrayList[0]
@@ -176,15 +174,16 @@ class EditActivity : AppCompatActivity() {
                 clearArrs()
                 Toast.makeText(this@EditActivity, resources.getString(R.string.search_fail), Toast.LENGTH_LONG).show()
                 link=""
-                title="$word"
+                title=tvEditWord.text.toString()
                 descr=""
             }
         } else {
             clearArrs()
             Toast.makeText(this@EditActivity, resources.getString(R.string.search_fail), Toast.LENGTH_LONG).show()
             link=""
-            title="$word"
+            title=tvEditWord.text.toString()
             descr=""}
+
     }
 
 
@@ -304,6 +303,30 @@ class EditActivity : AppCompatActivity() {
             val alert = builder.create()
             alert.show()
         }
+    }
+
+    inner class DoGet : AsyncTask<String, Unit, String?>(){
+        override fun doInBackground(vararg params: String?): String? {
+            return sendGetAsync(params[0])
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressBar.visibility = ProgressBar.VISIBLE
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            progressBar.visibility = ProgressBar.INVISIBLE
+            parseResponse(result)
+            updateUi()
+            //Log.d("q",result)
+        }
+
+        fun newInstance():AsyncTask<String, Unit, String?>{
+            return DoGet()
+        }
+
     }
 
 }
