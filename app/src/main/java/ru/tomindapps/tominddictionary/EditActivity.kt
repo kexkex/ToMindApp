@@ -39,6 +39,7 @@ class EditActivity : AppCompatActivity() {
 
     lateinit var tvAutoComplTitle:AutoCompleteTextView
     lateinit var progressBar: ProgressBar
+    lateinit var db:DB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +47,9 @@ class EditActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progressBar)
         progressBar.visibility = ProgressBar.INVISIBLE
+
+        db = DB()
+        db.create(this)
 
         val buRem = buRemove
         buRem.visibility=Button.GONE
@@ -255,7 +259,7 @@ class EditActivity : AppCompatActivity() {
 
     fun saveButtonClick(view: View){
 
-        var dbManager=DbManager(this)
+      //  var dbManager=DbManager(this)
         var values=ContentValues()
 
         if (tvEditWord.text.isNotEmpty()&&tvEditDescription.text.isNotEmpty()) {
@@ -268,7 +272,7 @@ class EditActivity : AppCompatActivity() {
             if (id == 0) {
                 if (wordContains()) {Toast.makeText(this, resources.getString(R.string.word_already_exists), Toast.LENGTH_LONG).show()}
                 else {
-                    val mID = dbManager.insert(values)
+                    val mID = db.addWordInDB(values)
 
                     if (mID > 0) {
                         Toast.makeText(this, resources.getString(R.string.add_note_successfully), Toast.LENGTH_LONG).show()
@@ -278,8 +282,8 @@ class EditActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                var selectionArs = arrayOf(id.toString())
-                val mID = dbManager.update(values, "Id=?", selectionArs)
+                //var selectionArs = arrayOf(id.toString())
+                val mID = db.updateWordInDb(values,id)
 
                 if (mID > 0) {
                     Toast.makeText(this, resources.getString(R.string.update_note_successfully), Toast.LENGTH_LONG).show()

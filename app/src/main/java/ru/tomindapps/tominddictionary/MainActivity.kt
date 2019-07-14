@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var list: ArrayList<InterestWord>
     private lateinit var sortOrder:String
+    private lateinit var db:DB
     val ORDER_BY_DATE = "Date"
     val ORDER_BY_TITLE = "Title DESC"
 
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         setContentView(R.layout.activity_main)
 
         sortOrder = ORDER_BY_DATE
+        db = DB()
+        db.create(this)
 
         loadListOfWords()
         list = WordFactory.getList()
@@ -208,8 +211,9 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     }
 
     private fun searchInListOfWords(s:String){
-
-        var dbManager=DbManager(this)
+        WordFactory.clearList()
+        for (w in db.searchInDB(s)) WordFactory.addWords(w)
+/*        var dbManager=DbManager(this)
         var dbCursor = dbManager.querySearch(s)
         WordFactory.clearList()
 
@@ -233,11 +237,14 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
                 )
 
             } while (dbCursor.moveToPrevious())
-        }
+        }*/
 
     }
 
     private fun loadListOfWords(){
+        WordFactory.clearList()
+        for (w in db.loadAllFromDB(sortOrder)) WordFactory.addWords(w)
+        /*
 
         var dbManager=DbManager(this)
         var dbCursor = dbManager.queryAllByOrder(sortOrder)
@@ -264,7 +271,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
                 )
 
             } while (dbCursor.moveToPrevious())
-        }
+        }*/
     }
 
     fun editWord(word: InterestWord) {
