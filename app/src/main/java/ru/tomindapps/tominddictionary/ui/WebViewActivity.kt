@@ -1,8 +1,8 @@
-package ru.tomindapps.tominddictionary
+package ru.tomindapps.tominddictionary.ui
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.activity_web_view.*
 

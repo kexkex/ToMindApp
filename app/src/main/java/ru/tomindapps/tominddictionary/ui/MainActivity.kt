@@ -1,61 +1,77 @@
-package ru.tomindapps.tominddictionary
+package ru.tomindapps.tominddictionary.ui
 
 import android.app.SearchManager
 import android.content.*
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import ru.tomindapps.tominddictionary.R
+import ru.tomindapps.tominddictionary.WordFactory
+import ru.tomindapps.tominddictionary.adapters.WordsAdapter
+import ru.tomindapps.tominddictionary.models.InterestWord
+import ru.tomindapps.tominddictionary.viewmodels.MainActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var list: ArrayList<InterestWord>
+    private lateinit var viewAdapter: WordsAdapter
+    private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var sortOrder:String
-    private lateinit var db:DB
     val ORDER_BY_DATE = "Date"
     val ORDER_BY_TITLE = "Title DESC"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         sortOrder = ORDER_BY_DATE
-        db = DB()
+
+        setupViews()
+        setupViewModels()
+
+        /*db = DB.instance
         db.create(this)
 
         loadListOfWords()
-        list = WordFactory.getList()
+        list = WordFactory.getList()*/
 
-        viewManager = LinearLayoutManager(this)
-        viewAdapter =
-            WordsAdapter(WordFactory.getList(), this)
+
+
+    }
+
+
+
+    private fun setupViewModels() {
+        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel(application)::class.java)
+        mainActivityViewModel.words.observe(this, androidx.lifecycle.Observer { viewAdapter.updateList(it) })
+    }
+
+    private fun setupViews() {
+        val viewManager = LinearLayoutManager(this)
+        viewAdapter = WordsAdapter(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.rvWords).apply {
             layoutManager = viewManager
-            addItemDecoration(object:DividerItemDecoration(this@MainActivity,LinearLayoutManager.VERTICAL){})
+            addItemDecoration(object: DividerItemDecoration(this@MainActivity,LinearLayoutManager.VERTICAL){})
             adapter = viewAdapter
         }
     }
 
     override fun onResume() {
-        loadListOfWords()
-        viewAdapter.notifyDataSetChanged()
+
+        mainActivityViewModel.getWords()
 
         val clipText = clipBoardIntercept()
         if (clipText!=null) addClipDataToEditAct(clipText)
@@ -64,15 +80,15 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     }
 
     override fun onEditClicked(position: Int) {
-        editWord(WordFactory.getWord(position))
+        editWord(mainActivityViewModel.words.value!![position])
     }
 
     override fun onWikiClicked(position: Int) {
-        openWiki(WordFactory.getList().get(position).link)
+        openWiki(mainActivityViewModel.words.value!![position].link)
     }
 
     override fun onMessageRowClicked(position: Int) {
-        showBottomSheetFragment(WordFactory.getWord(position))
+        showBottomSheetFragment(mainActivityViewModel.words.value!![position])
 
     }
 
@@ -83,8 +99,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
             R.id.menuSortDate -> sortOrder=ORDER_BY_DATE
         }
 
-        loadListOfWords()
-        viewAdapter.notifyDataSetChanged()
+        mainActivityViewModel.getWords()
 
         return super.onOptionsItemSelected(item)
     }
@@ -100,16 +115,14 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         sv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query!=null) {
-                    searchInListOfWords("%"+query+"%")
-                    viewAdapter.notifyDataSetChanged()
+                    mainActivityViewModel.findWords("%"+query+"%")
                 }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText!=null) {
-                    searchInListOfWords("%"+ newText +"%")
-                    viewAdapter.notifyDataSetChanged()
+                    mainActivityViewModel.findWords("%"+ newText +"%")
                 }
                 return false
 
@@ -157,20 +170,18 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     }
 
     fun clipBoardIntercept():String?{
-        try {
-
+        return try {
             val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = clipBoard.primaryClip
 
             if (clipData!=null) {
                 var text = clipData.getItemAt(0).text
                 if (text.length<=20&&text.length>=4) {
-                    return text.toString()
-                } else return null
-            } else return null
-        }
-        catch (ex:Throwable){
-            return null
+                    text.toString()
+                } else null
+            } else null
+        } catch (ex:Throwable){
+            null
         }
     }
 
@@ -210,10 +221,10 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         startActivity(intent)
     }
 
-    private fun searchInListOfWords(s:String){
+   /* private fun searchInListOfWords(s:String){
         WordFactory.clearList()
         for (w in db.searchInDB(s)) WordFactory.addWords(w)
-/*        var dbManager=DbManager(this)
+        var dbManager=DbManager(this)
         var dbCursor = dbManager.querySearch(s)
         WordFactory.clearList()
 
@@ -237,14 +248,14 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
                 )
 
             } while (dbCursor.moveToPrevious())
-        }*/
+        }
 
     }
 
     private fun loadListOfWords(){
         WordFactory.clearList()
         for (w in db.loadAllFromDB(sortOrder)) WordFactory.addWords(w)
-        /*
+
 
         var dbManager=DbManager(this)
         var dbCursor = dbManager.queryAllByOrder(sortOrder)
@@ -271,8 +282,8 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
                 )
 
             } while (dbCursor.moveToPrevious())
-        }*/
-    }
+        }
+    }*/
 
     fun editWord(word: InterestWord) {
 

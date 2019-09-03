@@ -1,20 +1,22 @@
-package ru.tomindapps.tominddictionary
+package ru.tomindapps.tominddictionary.adapters
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import ru.tomindapps.tominddictionary.R
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container.view.*
-import ru.tomindapps.tominddictionary.WordsAdapter.MyViewHolder
+import ru.tomindapps.tominddictionary.R
+import ru.tomindapps.tominddictionary.adapters.WordsAdapter.MyViewHolder
+import ru.tomindapps.tominddictionary.models.InterestWord
 
 
-
-class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterListener):
+class WordsAdapter (listener: MyAdapterListener):
     RecyclerView.Adapter<MyViewHolder>()  {
 
     var listener: MyAdapterListener
+    var wordsList = listOf<InterestWord>()
 
     init {
         this.listener=listener
@@ -37,10 +39,34 @@ class WordsAdapter (var wordsList:ArrayList<InterestWord>, listener: MyAdapterLi
 
     }
 
+    fun updateList(words: List<InterestWord>){
+        val diffUtilCallback = object : DiffUtil.Callback(){
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return wordsList[oldItemPosition].idWord == words[newItemPosition].idWord
+            }
+
+            override fun getOldListSize(): Int {
+                return wordsList.size
+            }
+
+            override fun getNewListSize(): Int {
+                return words.size
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return wordsList[oldItemPosition].hashCode() == words[newItemPosition].hashCode()
+            }
+        }
+        val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
+        wordsList = words
+        diffResult.dispatchUpdatesTo(this)
+
+    }
+
     private fun applyClickEvents(holder: MyViewHolder, position: Int) {
-        holder.buDone.setOnClickListener(View.OnClickListener { listener.onWikiClicked(position) })
-        holder.buEdit.setOnClickListener(View.OnClickListener { listener.onEditClicked(position) })
-        holder.messageContainer.setOnClickListener(View.OnClickListener { listener.onMessageRowClicked(position) })
+        holder.buDone.setOnClickListener{ listener.onWikiClicked(position) }
+        holder.buEdit.setOnClickListener{ listener.onEditClicked(position) }
+        holder.messageContainer.setOnClickListener{ listener.onMessageRowClicked(position) }
     }
 
     interface MyAdapterListener {

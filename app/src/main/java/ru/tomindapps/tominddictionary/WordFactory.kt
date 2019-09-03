@@ -1,5 +1,7 @@
 package ru.tomindapps.tominddictionary
 
+import ru.tomindapps.tominddictionary.models.InterestWord
+
 object WordFactory {
 
     private var listOfWords = arrayListOf<InterestWord>()

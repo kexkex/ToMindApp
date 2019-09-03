@@ -1,4 +1,4 @@
-package ru.tomindapps.tominddictionary
+package ru.tomindapps.tominddictionary.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,11 +9,20 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import ru.tomindapps.tominddictionary.R
+import ru.tomindapps.tominddictionary.models.WikiWords
 import java.util.ArrayList
 
-class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String>):BaseAdapter(),Filterable{
+class MyAutoCompliteAdapter (val context: Context):BaseAdapter(),Filterable{
 
-    var myTitleArr = titleArr
+    var titleArr = arrayListOf<String>()
+
+    fun updateList(WikiArr: List<WikiWords>){
+        titleArr.clear()
+        for (w in WikiArr){
+            titleArr.add(w.title)
+        }
+        notifyDataSetChanged()
+    }
 
     override fun getFilter(): Filter {
         var filter = object:Filter(){
@@ -60,7 +69,7 @@ class MyAutoCompliteAdapter (val context: Context, var titleArr:ArrayList<String
     }
 
     override fun getItem(position: Int): Any {
-        return titleArr.get(position)
+        return titleArr[position]
     }
 
     override fun getItemId(position: Int): Long {

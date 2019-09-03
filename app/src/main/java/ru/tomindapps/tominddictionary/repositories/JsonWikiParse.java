@@ -1,16 +1,17 @@
-package ru.tomindapps.tominddictionary;
+package ru.tomindapps.tominddictionary.repositories;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class JsonWikiParse {
-    String bigTitle;
-    ArrayList<String> title;
-    ArrayList<String> desc;
-    ArrayList<String> link;
+    public String bigTitle;
+    public ArrayList<String> title;
+    public ArrayList<String> desc;
+    public ArrayList<String> link;
 
     public JsonWikiParse(String s){
         Gson gson = new Gson();

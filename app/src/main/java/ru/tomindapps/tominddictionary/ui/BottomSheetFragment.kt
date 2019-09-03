@@ -1,11 +1,11 @@
-package ru.tomindapps.tominddictionary
+package ru.tomindapps.tominddictionary.ui
 
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.tomindapps.tominddictionary.R
 import kotlinx.android.synthetic.main.bottom_sheet_fragment.view.*
 import java.net.URLDecoder
