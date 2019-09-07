@@ -15,12 +15,8 @@ import ru.tomindapps.tominddictionary.models.InterestWord
 class WordsAdapter (listener: MyAdapterListener):
     RecyclerView.Adapter<MyViewHolder>()  {
 
-    var listener: MyAdapterListener
+    var listener: MyAdapterListener = listener
     var wordsList = listOf<InterestWord>()
-
-    init {
-        this.listener=listener
-    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): MyViewHolder {
 
@@ -77,16 +73,16 @@ class WordsAdapter (listener: MyAdapterListener):
 
     inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
 
-        val tvRvTitle=itemView.tvRvTitle
-        val tvRvDescr=itemView.tvRvDescr
-        val tvRvDate=itemView.tvRvDate
-        val buEdit=itemView.buEdit
-        val buDone=itemView.buDone
-        val messageContainer=itemView.rvItem
+        val tvRvTitle = itemView.tvRvTitle
+        val tvRvDescr = itemView.tvRvDescr
+        val tvRvDate = itemView.tvRvDate
+        val buEdit = itemView.buEdit
+        val buDone = itemView.buDone
+        val messageContainer = itemView.rvItem
 
         fun bind(interestWord: InterestWord) {
 
-            if (interestWord.link!="") buDone.visibility=Button.VISIBLE else buDone.visibility=Button.INVISIBLE
+            if (interestWord.link != "") buDone.visibility = Button.VISIBLE else buDone.visibility = Button.INVISIBLE
 
             tvRvTitle.text = interestWord.interestWord
             tvRvDescr.text = interestWord.wordDescription

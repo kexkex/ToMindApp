@@ -1,7 +1,6 @@
 package ru.tomindapps.tominddictionary.ui
 
 import android.content.Context
-import android.content.DialogInterface
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.widget.*
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_edit.*
 import ru.tomindapps.tominddictionary.R
-import ru.tomindapps.tominddictionary.WordFactory
 import ru.tomindapps.tominddictionary.adapters.MyAutoCompliteAdapter
 import ru.tomindapps.tominddictionary.models.InterestWord
 import ru.tomindapps.tominddictionary.models.WikiWords
@@ -22,8 +20,6 @@ class EditActivity : AppCompatActivity() {
 
     var id=0
     var title=""
-    var link=""
-    var locale = "ru"
 
     private lateinit var tvAutoComplTitle:AutoCompleteTextView
     private lateinit var progressBar: ProgressBar
@@ -60,14 +56,13 @@ class EditActivity : AppCompatActivity() {
 
             if (id != 0) {
                 editActivityViewModel.selectWordById(id)
-                buRem.visibility=Button.VISIBLE
+                buRem.visibility = Button.VISIBLE
             } else {
-                if (title!=null){
-                    tvEditWord.setText(title)
-                }
+                tvEditWord.setText(title)
             }
         } catch (ex: Exception) {
-        }    }
+        }
+    }
 
     private fun setupViewModels() {
         editActivityViewModel = ViewModelProviders.of(this).get(EditActivityViewModel(application)::class.java)
@@ -86,6 +81,7 @@ class EditActivity : AppCompatActivity() {
         buRem = findViewById(R.id.buRemove)
         buSave = findViewById(R.id.buSave)
         buSearch = findViewById(R.id.buEditSearch)
+        tvAutoComplTitle = findViewById(R.id.tvEditWord)
 
         buRem.setOnClickListener { removeButtonClick() }
         buSave.setOnClickListener { saveButtonClick() }
@@ -96,14 +92,8 @@ class EditActivity : AppCompatActivity() {
 
         adapter = MyAutoCompliteAdapter(this)
 
-        tvAutoComplTitle = tvEditWord
-        tvAutoComplTitle.threshold = 4
         tvAutoComplTitle.setAdapter(adapter)
-        tvAutoComplTitle.setOnItemClickListener { parent, view, position, id -> onDropDownItemClick(position) }
-
-        locale = Locale.getDefault().language
-
-
+        tvAutoComplTitle.setOnItemClickListener { _, _, position, _ -> onDropDownItemClick(position) }
     }
 
     override fun onBackPressed() {
@@ -119,21 +109,21 @@ class EditActivity : AppCompatActivity() {
         return networkInfo != null && networkInfo.isConnected
     }
 
-    fun onDropDownItemClick(position: Int) {
+    private fun onDropDownItemClick(position: Int) {
         wikiWord = editActivityViewModel.wikiWords.value!![position]
         tvEditWord.setText(wikiWord!!.title)
         tvEditDescription.setText(wikiWord!!.description)
     }
 
 
-    fun onWikiClick(){
+    private fun onWikiClick(){
         if (isNetworkConnected()) {
             editActivityViewModel.findInWiki(tvEditWord.text.toString())
             tvAutoComplTitle.showDropDown()
         } else Toast.makeText(this@EditActivity, resources.getString(R.string.network_is_not_connected), Toast.LENGTH_LONG).show()
     }
 
-    fun getCurrentDate():String{
+    private fun getCurrentDate():String{
 
         val currentDate = Date()
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
@@ -144,59 +134,65 @@ class EditActivity : AppCompatActivity() {
         return "$dateText $timeText"
     }
 
-    fun removeButtonClick(){
+    private fun removeButtonClick(){
         if (word != null) {editActivityViewModel.deleteWord(word!!)}
         finish()
 
     }
 
-    fun wordContains():Boolean{
-        var contains = false
-        val t = tvEditWord.text.toString()
-        for (w in WordFactory.getList()) {
-            if (w.interestWord==t) {
-                contains=true
-            }
-        }
-        return contains
-    }
-
-
-    fun saveButtonClick(){
+    private fun saveButtonClick(){
 
         if (word == null){
-            if (tvEditWord.text.isNotEmpty() && tvEditDescription.text.isNotEmpty()) {
-                val link = wikiWord?.link ?: ""
-                editActivityViewModel.saveWord(InterestWord.createWord(
-                    tvEditWord.text.toString(),
-                    tvEditDescription.text.toString(),
-                    getCurrentDate(),
-                    link
-                ))
-                finish()
-
-            }else{
-                val builder = AlertDialog.Builder(this)
-                builder.apply {
-                    setTitle(resources.getString(R.string.error))
-                    setMessage(resources.getString(R.string.enter_word_title_and_description))
-                    setCancelable(false)
-                    setNegativeButton(resources.getString(R.string.close), object:DialogInterface.OnClickListener {
-                        override fun onClick(dialog: DialogInterface?, which: Int) {
-                            dialog!!.cancel()
-                        }
-                    })
-                }
-                val alert = builder.create()
-                alert.show()
+            if (checkTvNotEmpty()) {
+                saveNewWord()
+            } else {
+                showDialogError()
             }
         } else {
-
-            editActivityViewModel.saveWord(word!!)
-            finish()
+            updateWord()
         }
+    }
 
+    private fun updateWord() {
+        val editedWord = word
+        val _link = wikiWord?.link ?: ""
+        editedWord?.apply {
+            interestWord = tvEditWord.text.toString()
+            wordDescription = tvEditDescription.text.toString()
+            date = getCurrentDate()
+            link = _link
+        }
+        editActivityViewModel.saveWord(editedWord!!)
+        finish()
+    }
 
+    private fun saveNewWord() {
+        val link = wikiWord?.link ?: ""
+        editActivityViewModel.saveWord(
+            InterestWord(
+            tvEditWord.text.toString(),
+            tvEditDescription.text.toString(),
+            getCurrentDate(),
+            link)
+        )
+        finish()
+    }
+
+    private fun checkTvNotEmpty():Boolean{
+        return (tvEditWord.text.isNotEmpty() && tvEditDescription.text.isNotEmpty())
+    }
+
+    private fun showDialogError() {
+        val builder = AlertDialog.Builder(this)
+        builder.apply {
+            setTitle(resources.getString(R.string.error))
+            setMessage(resources.getString(R.string.enter_word_title_and_description))
+            setCancelable(false)
+            setNegativeButton(resources.getString(R.string.close)
+            ) { dialog, _ -> dialog!!.cancel() }
+        }
+        val alert = builder.create()
+        alert.show()
     }
 
 }

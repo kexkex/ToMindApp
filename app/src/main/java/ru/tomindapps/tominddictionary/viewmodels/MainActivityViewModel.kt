@@ -14,42 +14,40 @@ class MainActivityViewModel(app: Application) : AndroidViewModel(app){
 
     private val wordsRepo: WordsRepo
     val words: MutableLiveData<List<InterestWord>> = MutableLiveData()
+
     init {
         val dao = AppDb.getInstance(app).wordsDao()
         wordsRepo = WordsRepo(dao)
     }
 
     fun findWords(query: String){
-        words.value?.filter { searchWords(it, query) }
-
+        viewModelScope.launch(Dispatchers.IO){
+            words.postValue(wordsRepo.findWordsInDb(query))
+        }
     }
 
-    fun getWordsByOrder(sortOrder: String){
-        words.value
+    fun getWordsByOrder(orderType: OrderType = OrderType.TITLE){
+        when (orderType){
+            OrderType.DATE -> getWordsByDate()
+            OrderType.TITLE -> getWordsByTitle()
+        }
     }
 
-    private fun searchWords(interestWord: InterestWord, query: String): Boolean {
-        return (interestWord.interestWord.contains(query,true))
-    }
-
-    fun getWords(){
+    private fun getWordsByTitle(){
         viewModelScope.launch(Dispatchers.IO){
             words.postValue(wordsRepo.getWords().sortedBy { it.interestWord })
-            //wordsRepo.words = (words.value as ArrayList<InterestWord>?)!!
         }
     }
 
-    fun saveWord(word: InterestWord){
-        viewModelScope.launch(Dispatchers.IO) {
-            wordsRepo.saveWordToDb(word)
-            words.value = wordsRepo.words
-        }
-    }
-
-    fun deleteWord(word: InterestWord){
+    private fun getWordsByDate(){
         viewModelScope.launch(Dispatchers.IO){
-            wordsRepo.deleteWordFromDb(word)
-            words.value = wordsRepo.words
+            words.postValue(wordsRepo.getWords().sortedBy { it.date })
         }
     }
+
+}
+
+enum class OrderType {
+    DATE,
+    TITLE
 }

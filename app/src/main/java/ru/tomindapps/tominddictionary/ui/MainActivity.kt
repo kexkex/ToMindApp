@@ -16,12 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.javasampleapproach.kotlin.sqlite.DbManager
 import ru.tomindapps.tominddictionary.R
-import ru.tomindapps.tominddictionary.WordFactory
 import ru.tomindapps.tominddictionary.adapters.WordsAdapter
 import ru.tomindapps.tominddictionary.models.InterestWord
 import ru.tomindapps.tominddictionary.viewmodels.MainActivityViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import ru.tomindapps.tominddictionary.viewmodels.OrderType
 
 
 class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
@@ -29,29 +27,15 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: WordsAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
-    private lateinit var sortOrder:String
-    val ORDER_BY_DATE = "Date"
-    val ORDER_BY_TITLE = "Title DESC"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sortOrder = ORDER_BY_DATE
 
         setupViews()
         setupViewModels()
-
-        /*db = DB.instance
-        db.create(this)
-
-        loadListOfWords()
-        list = WordFactory.getList()*/
-
-
-
     }
-
-
 
     private fun setupViewModels() {
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel(application)::class.java)
@@ -71,7 +55,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
 
     override fun onResume() {
 
-        mainActivityViewModel.getWords()
+        mainActivityViewModel.getWordsByOrder()
 
         val clipText = clipBoardIntercept()
         if (clipText!=null) addClipDataToEditAct(clipText)
@@ -93,13 +77,12 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
-        when (item!!.itemId){
-            R.id.menuSortAlphabet -> sortOrder=ORDER_BY_TITLE
-            R.id.menuSortDate -> sortOrder=ORDER_BY_DATE
+        val orderType = when (item!!.itemId){
+            R.id.menuSortAlphabet -> OrderType.TITLE
+            R.id.menuSortDate -> OrderType.DATE
+            else -> null
         }
-
-        mainActivityViewModel.getWords()
+        if (orderType !=null ) mainActivityViewModel.getWordsByOrder(orderType)
 
         return super.onOptionsItemSelected(item)
     }
@@ -115,14 +98,14 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         sv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query!=null) {
-                    mainActivityViewModel.findWords("%"+query+"%")
+                    mainActivityViewModel.findWords("%$query%")
                 }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText!=null) {
-                    mainActivityViewModel.findWords("%"+ newText +"%")
+                    mainActivityViewModel.findWords("%$newText%")
                 }
                 return false
 
@@ -133,7 +116,7 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
     }
 
 
-    fun showBottomSheetFragment(word: InterestWord){
+    private fun showBottomSheetFragment(word: InterestWord){
 
         val bsf = BottomSheetFragment()
 
@@ -142,26 +125,15 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         bundle.putString("descr",word.wordDescription)
         bundle.putString("link",word.link)
 
-        bsf.arguments=bundle
-        bsf.show(supportFragmentManager,bsf.tag)
+        bsf.arguments = bundle
+        bsf.show(supportFragmentManager, bsf.tag)
     }
 
-    fun openWiki(link:String){
+    private fun openWiki(link:String){
 
         val intent = Intent(this, WebViewActivity::class.java)
         intent.putExtra("Link",link)
         startActivity(intent)
-    }
-
-    fun getCurrentDate():String{
-
-        val currentDate = Date()
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val dateText = dateFormat.format(currentDate)
-        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        val timeText = timeFormat.format(currentDate)
-
-        return "$dateText $timeText"
     }
 
     fun fabClick(view: View){
@@ -169,43 +141,43 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         startActivity(intent)
     }
 
-    fun clipBoardIntercept():String?{
+    private fun clipBoardIntercept():String?{
         return try {
             val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = clipBoard.primaryClip
 
-            if (clipData!=null) {
+            if (clipData != null) {
                 var text = clipData.getItemAt(0).text
                 if (text.length<=20&&text.length>=4) {
                     text.toString()
                 } else null
             } else null
-        } catch (ex:Throwable){
+        } catch (ex: Throwable){
             null
         }
     }
 
-    fun clearClipBoard(){
+    private fun clearClipBoard(){
 
         val clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("","")
-        clipBoard.primaryClip=clipData
+        clipBoard.primaryClip = clipData
     }
 
-    fun addClipDataToEditAct(s:String){
+    private fun addClipDataToEditAct(s:String){
 
         val builder = AlertDialog.Builder(this)
         builder.apply {
             setTitle("${s.capitalize()}")
             setMessage("У вас есть слово - ${s.capitalize()} в буфере обмена! Хотите его добавить?")
             setCancelable(true)
-            setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+            setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
                 dialog!!.cancel()
                 clearClipBoard()
                 startEditActWithClip(s.capitalize())
             }
             setNegativeButton(resources.getString(R.string.no)
-            ) { dialog, which ->
+            ) { dialog, _ ->
                 dialog!!.cancel()
                 clearClipBoard()
             }
@@ -214,78 +186,16 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
         alert.show()
     }
 
-    fun startEditActWithClip(s:String){
+    private fun startEditActWithClip(s:String){
 
         var intent = Intent(this, EditActivity::class.java)
         intent.putExtra("MainActTitle", s)
         startActivity(intent)
     }
 
-   /* private fun searchInListOfWords(s:String){
-        WordFactory.clearList()
-        for (w in db.searchInDB(s)) WordFactory.addWords(w)
-        var dbManager=DbManager(this)
-        var dbCursor = dbManager.querySearch(s)
-        WordFactory.clearList()
-
-        if (dbCursor.moveToLast()) {
-
-            do {
-                val id = dbCursor.getInt(dbCursor.getColumnIndex("Id"))
-                val title = dbCursor.getString(dbCursor.getColumnIndex("Title"))
-                val content = dbCursor.getString(dbCursor.getColumnIndex("Content"))
-                val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
-                val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
-
-                WordFactory.addWords(
-                    InterestWord(
-                        id,
-                        title,
-                        content,
-                        date,
-                        link
-                    )
-                )
-
-            } while (dbCursor.moveToPrevious())
-        }
-
-    }
-
-    private fun loadListOfWords(){
-        WordFactory.clearList()
-        for (w in db.loadAllFromDB(sortOrder)) WordFactory.addWords(w)
 
 
-        var dbManager=DbManager(this)
-        var dbCursor = dbManager.queryAllByOrder(sortOrder)
-
-        WordFactory.clearList()
-
-        if (dbCursor.moveToLast()) {
-
-            do {
-                val id = dbCursor.getInt(dbCursor.getColumnIndex("Id"))
-                val title = dbCursor.getString(dbCursor.getColumnIndex("Title"))
-                val content = dbCursor.getString(dbCursor.getColumnIndex("Content"))
-                val date = dbCursor.getString(dbCursor.getColumnIndex("Date"))
-                val link = dbCursor.getString(dbCursor.getColumnIndex("Link"))
-
-                WordFactory.addWords(
-                    InterestWord(
-                        id,
-                        title,
-                        content,
-                        date,
-                        link
-                    )
-                )
-
-            } while (dbCursor.moveToPrevious())
-        }
-    }*/
-
-    fun editWord(word: InterestWord) {
+    private fun editWord(word: InterestWord) {
 
         var intent = Intent(this, EditActivity::class.java)
 
@@ -296,38 +206,5 @@ class MainActivity : AppCompatActivity(), WordsAdapter.MyAdapterListener {
 
         startActivity(intent)
     }
-
-    fun fillList(){
-
-        var dbManager=DbManager(this)
-        var values=ContentValues()
-
-        values.put("Title", "ываыва")
-        values.put("Content", "ываыва")
-        values.put("Date", getCurrentDate())
-        dbManager.insert(values)
-
-        values.put("Title", "чсмчмва")
-        values.put("Content", "мчвмч")
-        values.put("Date", getCurrentDate())
-        dbManager.insert(values)
-
-        values.put("Title", "цукцук")
-        values.put("Content", "alshd")
-        values.put("Date", getCurrentDate())
-        dbManager.insert(values)
-
-        values.put("Title", "еуцуецу")
-        values.put("Content", "alshd")
-        values.put("Date", getCurrentDate())
-        dbManager.insert(values)
-
-        values.put("Title", "афывфцуф")
-        values.put("Content", "alshd")
-        values.put("Date", getCurrentDate())
-        dbManager.insert(values)
-    }
-
-
 
 }

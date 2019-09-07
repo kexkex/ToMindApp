@@ -17,8 +17,8 @@ interface WordsDao {
     @Query ("Select * from words")
     fun selectAll(): List<InterestWord>
 
-    @Query ("Select * from words order by :sortOrder")
-    fun selectByOrder(sortOrder: String): List<InterestWord>
+    @Query ("Select * from words where interestWord like :searchQuery")
+    fun selectByQuery(searchQuery: String): List<InterestWord>
 
     @Query ("Select * from words where idWord like :id")
     fun selectById(id: Int): InterestWord

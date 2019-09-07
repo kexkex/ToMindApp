@@ -9,15 +9,7 @@ data class InterestWord (
     var wordDescription:String,
     var date: String,
     var link:String = "",
-    @PrimaryKey
-    val idWord:Int){
-
-    companion object{
-        var lastId = 0
-        fun createWord(title: String, descr: String, date: String, link: String): InterestWord{
-            lastId++
-            return InterestWord(title, descr, date, link, lastId)
-        }
-    }
+    @PrimaryKey(autoGenerate = true)
+    val idWord:Int = 0){
 }
 
